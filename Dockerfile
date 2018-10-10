@@ -20,18 +20,10 @@ ENV JASON_HOME=/jason/build
 ENV PATH=$JASON_HOME/scripts:$PATH
 
 # Install rosjava
-RUN apt-get update && \
-	mkdir -p /rosjava/src && \
-	wstool init -j4 /rosjava/src https://raw.githubusercontent.com/rosjava/rosjava/kinetic/rosjava.rosinstall && \
-	cd /rosjava && \
-	rosdep update && \
-	rosdep install --from-paths src -i -y  && \
+RUN apt update && \
+	apt install -y  \
+	ros-kinetic-rosjava && \
 	rm -rf /var/lib/apt/lists/
-
-# Catkin_make rosjava
-RUN ["/bin/bash","-c", "source /opt/ros/kinetic/setup.bash && \
-                  cd /rosjava && \
-                  catkin_make "]
 
 # Setup catkin workspace
 RUN ["/bin/bash","-c", "source /opt/ros/kinetic/setup.bash && \
@@ -44,9 +36,10 @@ RUN ["/bin/bash","-c", "source /opt/ros/kinetic/setup.bash && \
 WORKDIR /catkin_ws/src/
 
 #Copy package files to catkin workspace
-RUN ["/bin/bash", "-c", "source /rosjava/devel/setup.bash && \ 
-                         catkin_create_rosjava_pkg jason_agents"]
-#COPY teleop_ws/src/keyboard_driver /catkin_ws/src/keyboard_driver
+RUN ["/bin/bash", "-c", "source /opt/ros/kinetic/setup.bash && \ 
+                        catkin_create_rosjava_pkg jason_agents"]
+
+
 
 COPY entrypoint.sh /
 ENTRYPOINT ["/entrypoint.sh"]
