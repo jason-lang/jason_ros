@@ -44,7 +44,8 @@ RUN ["/bin/bash","-c", "source /opt/ros/kinetic/setup.bash && \
 WORKDIR /catkin_ws/src/
 
 #Copy package files to catkin workspace
-#RUN catkin_create_pkg keyboard_driver
+RUN ["/bin/bash", "-c", "source /rosjava/devel/setup.bash && \ 
+                         catkin_create_rosjava_pkg jason_agents"]
 #COPY teleop_ws/src/keyboard_driver /catkin_ws/src/keyboard_driver
 
 COPY entrypoint.sh /
