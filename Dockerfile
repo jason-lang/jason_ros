@@ -28,6 +28,11 @@ RUN apt-get update && \
 	rosdep install --from-paths src -i -y  && \
 	rm -rf /var/lib/apt/lists/
 
+# Catkin_make rosjava
+RUN ["/bin/bash","-c", "source /opt/ros/kinetic/setup.bash && \
+                  cd /rosjava && \
+                  catkin_make "]
+
 # Setup catkin workspace
 RUN ["/bin/bash","-c", "source /opt/ros/kinetic/setup.bash && \
                   mkdir -p /catkin_ws/src && \
