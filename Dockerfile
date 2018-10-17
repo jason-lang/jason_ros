@@ -22,10 +22,20 @@ ENV PATH=$JASON_HOME/scripts:$PATH
 # Install rosjava
 RUN apt update && \
 	apt install -y  \
-	ros-kinetic-rosjava && \
+	maven \
+        ros-kinetic-rosbridge-server && \
 	rm -rf /var/lib/apt/lists/
 
-# Setup catkin workspace
+WORKDIR /
+
+RUN ["/bin/bash","-c","git clone https://github.com/h2r/java_rosbridge.git"]
+WORKDIR java_rosbridge
+
+RUN ["/bin/bash","-c","mvn compile && \
+                       mvn package && \
+                       mvn install"]
+
+## Setup catkin workspace
 RUN ["/bin/bash","-c", "source /opt/ros/kinetic/setup.bash && \
                   mkdir -p /catkin_ws/src && \
                   cd /catkin_ws/src && \
@@ -34,10 +44,6 @@ RUN ["/bin/bash","-c", "source /opt/ros/kinetic/setup.bash && \
                   catkin_make "]
 
 WORKDIR /catkin_ws/src/
-
-#Copy package files to catkin workspace
-RUN ["/bin/bash", "-c", "source /opt/ros/kinetic/setup.bash && \ 
-                        catkin_create_rosjava_pkg jason_agents"]
 
 
 
