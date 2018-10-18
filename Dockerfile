@@ -28,19 +28,12 @@ WORKDIR java_rosbridge
 RUN ["/bin/bash","-c","mvn compile && \
                        mvn package && \
                        mvn install"]
-ENV CLASSPATH="/java_rosbridge/target/java_rosbridge-2.0.2-jar-with-dependencies.jar:${CLASSPATH}"
 
-## Setup catkin workspace
-RUN ["/bin/bash","-c", "source /opt/ros/kinetic/setup.bash && \
-                  mkdir -p /catkin_ws/src && \
-                  cd /catkin_ws/src && \
-                  catkin_init_workspace && \
-                  cd /catkin_ws/ && \
-                  catkin_make "]
+## Copy Jason files
+COPY rosbridge_agents /rosbridge_agents
+WORKDIR /rosbridge_agents
 
-WORKDIR /catkin_ws/src/
-
-
+RUN ["/bin/bash","-c","cp /java_rosbridge/target/java_rosbridge-2.0.2-jar-with-dependencies.jar lib/"]
 
 COPY entrypoint.sh /
 ENTRYPOINT ["/entrypoint.sh"]
