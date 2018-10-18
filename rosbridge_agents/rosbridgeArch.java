@@ -13,6 +13,7 @@ import ros.SubscriptionRequestMsg;
 public class rosbridgeArch extends AgArch {
 
     RosBridge bridge = new RosBridge();
+    Literal perception = null;
 
     @Override
     public void init(){
@@ -25,7 +26,7 @@ public class rosbridgeArch extends AgArch {
               public void receive(JsonNode data, String stringRep) {
                       MessageUnpacker<PrimitiveMsg<String>> unpacker = new MessageUnpacker<PrimitiveMsg<String>>(PrimitiveMsg.class);
                       PrimitiveMsg<String> msg = unpacker.unpackRosMessage(data);
-                      System.out.println(msg.data);
+                      perception = Literal.parseLiteral(msg.data);
               }
         }
       );
@@ -33,12 +34,10 @@ public class rosbridgeArch extends AgArch {
 
     @Override
     public List<Literal> perceive() {
-
       List<Literal> per = new ArrayList<Literal>();
-      Literal lit = Literal.parseLiteral("p(a)");
-
-      per.add(lit);
-      System.out.println(per);
+      if(perception!=null){
+        per.add(perception);
+      }
       return per;
     }
 }
