@@ -25,5 +25,5 @@ $ docker run -it --rm  --net ros_net  --name echo --env ROS_HOSTNAME=echo --env 
 ```
 Then:
 ```
-$ rostopic pub -1 /jason/percepts std_msgs/String
+$ rostopic pub -1 /jason/percepts std_msgs/String teste
 ```
