@@ -3,6 +3,11 @@ ROS package for jason
 
 ## Rosbridge
 
+Build image
+```
+$ sudo docker build --tag ros_bridge .
+```
+
 Container 1:
 
 ```
