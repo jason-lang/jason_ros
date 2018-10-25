@@ -1,5 +1,6 @@
 import jason.asSyntax.*;
 import jason.architecture.*;
+import jason.asSemantics.*;
 import java.util.*;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -14,6 +15,7 @@ public class rosbridgeArch extends AgArch {
 
     RosBridge bridge = new RosBridge();
     Literal perception = null;
+    Publisher pub;
 
     @Override
     public void init(){
@@ -30,6 +32,7 @@ public class rosbridgeArch extends AgArch {
               }
         }
       );
+      pub = new Publisher("/jason/actions", "std_msgs/String", bridge);
     }
 
     @Override
@@ -39,5 +42,14 @@ public class rosbridgeArch extends AgArch {
         per.add(perception);
       }
       return per;
+    }
+
+    @Override
+    public void act(ActionExec action) {
+        String action_string = action.getActionTerm().getFunctor();
+        pub.publish(new PrimitiveMsg<String>(action_string));
+
+        action.setResult(true);
+        actionExecuted(action);
     }
 }
