@@ -5,7 +5,11 @@ ROS package for jason
 
 Build image
 ```
-$ sudo docker build --tag ros_bridge .
+$ docker build --tag ros_bridge .
+```
+Create network:
+```
+$ docker network create ros_net
 ```
 
 Container 1:
