@@ -32,5 +32,18 @@ Then:
 ```
 $ rostopic pub -1 /jason/percepts std_msgs/String teste
 ```
+## Customization
+
+In order to customize the agent application you can put your agent code inside rosbridge_agents folder or alter the following lines:
+
+```
+## Copy Jason files
+COPY rosbridge_agents /rosbridge_agents
+WORKDIR /rosbridge_agents
+
+RUN ["/bin/bash","-c","mkdir -p lib && cp /java_rosbridge/target/java_rosbridge-2.0.2-jar-with-dependencies.jar lib/"]
+```
+When pulling the image from Dockerhub just modify the lines above and add to your Dockerfile
+
 ## More info
 Dockerhub: https://hub.docker.com/r/rezenders/jason-ros/
