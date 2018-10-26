@@ -23,7 +23,7 @@ ENV PATH=$JASON_HOME/scripts:$PATH
 
 # Download, install and configure java_rosbridge
 WORKDIR /
-RUN ["/bin/bash","-c","git clone https://github.com/h2r/java_rosbridge.git"]
+RUN ["/bin/bash","-c","git clone https://github.com/Rezenders/java_rosbridge.git"]
 WORKDIR java_rosbridge
 RUN ["/bin/bash","-c","mvn compile && \
                        mvn package && \
