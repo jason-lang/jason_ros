@@ -35,6 +35,4 @@ WORKDIR /rosbridge_agents
 
 RUN ["/bin/bash","-c","mkdir -p lib && cp /java_rosbridge/target/java_rosbridge-2.0.2-jar-with-dependencies.jar lib/"]
 
-COPY entrypoint.sh /
-ENTRYPOINT ["/entrypoint.sh"]
 CMD ["bash"]
