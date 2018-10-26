@@ -7,7 +7,7 @@ RUN apt-get update && apt-get install -y \
 	default-jdk \
 	gradle  \
 	maven \
-	ros-kinetic-rosbridge-server \
+	ros-melodic-rosbridge-server \
 	&& rm -rf /var/lib/apt/lists/
 
 # Set java home
