@@ -1,17 +1,12 @@
-FROM ros:melodic-ros-core
+FROM rezenders/beaglebone-black-ubuntu-openjdk-ros
 
 # Install packages
 RUN apt-get update && apt-get install -y \
-	vim \
 	git \
-	default-jdk \
-	gradle  \
+	gradle \
 	maven \
 	ros-melodic-rosbridge-server \
 	&& rm -rf /var/lib/apt/lists/
-
-# Set java home
-ENV JAVA_HOME=/usr/lib/jvm/default-java
 
 # Download, install and configure Jason
 WORKDIR /
