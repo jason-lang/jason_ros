@@ -1,13 +1,14 @@
-FROM ros:melodic-ros-core
+FROM ros:kinetic-ros-core
 
 # Install packages
 RUN apt-get update && apt-get install -y \
 	vim \
-	git \
 	default-jdk \
 	gradle  \
 	maven \
-	ros-melodic-rosbridge-server \
+	ros-kinetic-catkin \
+	ros-kinetic-rospack \
+	python-wstool \
 	&& rm -rf /var/lib/apt/lists/
 
 # Set java home
@@ -21,18 +22,26 @@ RUN ["/bin/bash", "-c", "gradle config"]
 ENV JASON_HOME=/jason/build
 ENV PATH=$JASON_HOME/scripts:$PATH
 
-# Download, install and configure java_rosbridge
+
+RUN apt-get update && apt-get install -y \
+	ros-kinetic-world-canvas-msgs \
+	ros-kinetic-concert-service-msgs \
+	ros-kinetic-ar-track-alvar-msgs \
+	ros-kinetic-gateway-msgs \
+	ros-kinetic-rocon-device-msgs \
+	ros-kinetic-rocon-app-manager-msgs \
+	ros-kinetic-scheduler-msgs \
+	ros-kinetic-rocon-tutorial-msgs \
+	ros-kinetic-rocon-interaction-msgs \
+	ros-kinetic-yocs-msgs \
+	ros-kinetic-concert-msgs \
+	ros-kinetic-move-base-msgs \
+	ros-kinetic-tf2-msgs \
+	&& rm -rf /var/lib/apt/lists/
+
+# Download, install and configure rosjava
 WORKDIR /
-RUN ["/bin/bash","-c","git clone https://github.com/Rezenders/java_rosbridge.git"]
-WORKDIR java_rosbridge
-RUN ["/bin/bash","-c","mvn compile && \
-                       mvn package && \
-                       mvn install"]
+RUN ["/bin/bash","-c","mkdir -p ~/rosjava/src && wstool init -j4 ~/rosjava/src https://raw.githubusercontent.com/rosjava/rosjava/kinetic/rosjava.rosinstall && source /opt/ros/kinetic/setup.bash && cd ~/rosjava/ && rosdep update && rosdep install --from-paths src -i -y && catkin_make"]
 
-## Copy Jason files
-COPY rosbridge_agents /rosbridge_agents
-WORKDIR /rosbridge_agents
-
-RUN ["/bin/bash","-c","mkdir -p lib && cp /java_rosbridge/target/java_rosbridge-2.0.2-jar-with-dependencies.jar lib/"]
 
 CMD ["bash"]
