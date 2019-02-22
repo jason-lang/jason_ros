@@ -2,6 +2,7 @@ import jason.asSyntax.*;
 import jason.architecture.*;
 import jason.asSemantics.*;
 import java.util.List;
+import java.util.ArrayList;
 
 import org.apache.commons.logging.Log;
 import org.ros.concurrent.CancellableLoop;
@@ -16,7 +17,7 @@ import org.ros.message.MessageListener;
 public class RosJasonNode extends AbstractNodeMain{
 	Publisher<std_msgs.String> actionPub;
 	Literal perception = null;
-	List<String> actions_status = new List<String>();
+	List<String> actions_status = new ArrayList<String>();
 
 	@Override
 	public GraphName getDefaultNodeName() {
@@ -60,7 +61,7 @@ public class RosJasonNode extends AbstractNodeMain{
 	}
 
 	public List<String> retrieveStatus(){
-		List<String> aux = actions_status;
+		List<String> aux = new ArrayList<String>(actions_status);
 		actions_status.clear();
 		return aux;
 	}

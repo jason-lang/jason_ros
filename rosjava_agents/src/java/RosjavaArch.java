@@ -9,19 +9,29 @@ import java.util.regex.Pattern;
 import java.util.Map;
 import java.util.HashMap;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+
+import org.ros.exception.RosRuntimeException;
+import org.ros.internal.loader.CommandLineLoader;
+import org.ros.node.DefaultNodeMainExecutor;
+import org.ros.node.NodeConfiguration;
+import org.ros.node.NodeMain;
+import org.ros.node.NodeMainExecutor;
+
 public class RosjavaArch extends AgArch{
 	RosJasonNode rosNode;
 	Map<String, ActionExec> actionsWaiting = new HashMap<String,ActionExec>();
 
 	@Override
-	public init(){
+	public void init(){
 		CommandLineLoader loader = new CommandLineLoader(Lists.newArrayList("RosJasonNode"));
 	    String nodeClassName = loader.getNodeClassName();
 	    System.out.println("Loading node class: " + loader.getNodeClassName());
 	    NodeConfiguration nodeConfiguration = loader.build();
-
+		NodeMain nodeMain = null;
 	    try {
-	      rosNode = loader.loadClass(nodeClassName);
+	      nodeMain = (RosJasonNode) loader.loadClass(nodeClassName);
 	    } catch (ClassNotFoundException e) {
 	      throw new RosRuntimeException("Unable to locate node: " + nodeClassName, e);
 	    } catch (InstantiationException e) {
@@ -30,9 +40,12 @@ public class RosjavaArch extends AgArch{
 	      throw new RosRuntimeException("Unable to instantiate node: " + nodeClassName, e);
 	    }
 
-	    Preconditions.checkState(rosNode != null);
+	    Preconditions.checkState(nodeMain != null);
 	    NodeMainExecutor nodeMainExecutor = DefaultNodeMainExecutor.newDefault();
-	    nodeMainExecutor.execute(rosNode, nodeConfiguration);
+	    nodeMainExecutor.execute(nodeMain, nodeConfiguration);
+
+		rosNode = (RosJasonNode) nodeMain;
+		while( !rosNode.Connected() ) Thread.sleep(1000);
 	}
 
 	@Override
