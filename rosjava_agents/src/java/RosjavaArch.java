@@ -9,9 +9,6 @@ import java.util.regex.Pattern;
 import java.util.Map;
 import java.util.HashMap;
 
-
-import com.fasterxml.jackson.databind.JsonNode;
-
 public class RosjavaArch extends AgArch{
 	RosJasonNode rosNode;
 	Map<String, ActionExec> actionsWaiting = new HashMap<String,ActionExec>();
@@ -19,7 +16,7 @@ public class RosjavaArch extends AgArch{
 	@Override
     public void reasoningCycleStarting() {
     	List<String> actions_status = rosNode.retrieveStatus();
-		for(String status : action_status){
+		for(String status : actions_status){
 			actionsStatus(status);
 		}
     	super.reasoningCycleStarting();

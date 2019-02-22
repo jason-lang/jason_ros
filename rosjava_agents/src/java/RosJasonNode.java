@@ -33,7 +33,7 @@ public class RosJasonNode extends AbstractNodeMain{
 		perceptsSub.addMessageListener(new MessageListener<std_msgs.String>() {
 	      @Override
 	      public void onNewMessage(std_msgs.String message) {
-	        perception = message.getData();
+	        perception =Literal.parseLiteral(message.getData());
 	      }
 	    });
 
@@ -43,7 +43,7 @@ public class RosJasonNode extends AbstractNodeMain{
 		actionsStatusSub.addMessageListener(new MessageListener<std_msgs.String>() {
 			@Override
 			public void onNewMessage(std_msgs.String message) {
-				action_status.add(message);
+				actions_status.add(message.getData());
 			}
 		});
 
@@ -54,12 +54,14 @@ public class RosJasonNode extends AbstractNodeMain{
 	}
 
 	public void publishAction(String action){
-		actionPub.publish(action);
+		std_msgs.String str = actionPub.newMessage();
+        str.setData(action);
+		actionPub.publish(str);
 	}
 
 	public List<String> retrieveStatus(){
-		List<String> aux = action_status;
-		action_status.clear();
+		List<String> aux = actions_status;
+		actions_status.clear();
 		return aux;
 	}
 }
