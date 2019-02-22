@@ -16,7 +16,7 @@ import org.ros.message.MessageListener;
 public class RosJasonNode extends AbstractNodeMain{
 	Publisher<std_msgs.String> actionPub;
 	Literal perception = null;
-	List<String> actions_status;
+	List<String> actions_status = new List<String>();
 
 	@Override
 	public GraphName getDefaultNodeName() {

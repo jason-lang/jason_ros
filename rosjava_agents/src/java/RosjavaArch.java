@@ -14,6 +14,28 @@ public class RosjavaArch extends AgArch{
 	Map<String, ActionExec> actionsWaiting = new HashMap<String,ActionExec>();
 
 	@Override
+	public init(){
+		CommandLineLoader loader = new CommandLineLoader(Lists.newArrayList("RosJasonNode"));
+	    String nodeClassName = loader.getNodeClassName();
+	    System.out.println("Loading node class: " + loader.getNodeClassName());
+	    NodeConfiguration nodeConfiguration = loader.build();
+
+	    try {
+	      rosNode = loader.loadClass(nodeClassName);
+	    } catch (ClassNotFoundException e) {
+	      throw new RosRuntimeException("Unable to locate node: " + nodeClassName, e);
+	    } catch (InstantiationException e) {
+	      throw new RosRuntimeException("Unable to instantiate node: " + nodeClassName, e);
+	    } catch (IllegalAccessException e) {
+	      throw new RosRuntimeException("Unable to instantiate node: " + nodeClassName, e);
+	    }
+
+	    Preconditions.checkState(rosNode != null);
+	    NodeMainExecutor nodeMainExecutor = DefaultNodeMainExecutor.newDefault();
+	    nodeMainExecutor.execute(rosNode, nodeConfiguration);
+	}
+
+	@Override
     public void reasoningCycleStarting() {
     	List<String> actions_status = rosNode.retrieveStatus();
 		for(String status : actions_status){
