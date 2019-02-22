@@ -24,7 +24,7 @@ public class RosjavaArch extends AgArch{
 	Map<String, ActionExec> actionsWaiting = new HashMap<String,ActionExec>();
 
 	@Override
-	public void init(){
+	public void init() throws Exception{
 		CommandLineLoader loader = new CommandLineLoader(Lists.newArrayList("RosJasonNode"));
 	    String nodeClassName = loader.getNodeClassName();
 	    System.out.println("Loading node class: " + loader.getNodeClassName());

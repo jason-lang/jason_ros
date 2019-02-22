@@ -18,6 +18,7 @@ public class RosJasonNode extends AbstractNodeMain{
 	Publisher<std_msgs.String> actionPub;
 	Literal perception = null;
 	List<String> actions_status = new ArrayList<String>();
+	boolean connected;
 
 	@Override
 	public GraphName getDefaultNodeName() {
@@ -47,7 +48,7 @@ public class RosJasonNode extends AbstractNodeMain{
 				actions_status.add(message.getData());
 			}
 		});
-
+		this.connected= true;
 	}
 
 	public Literal getPerception(){
@@ -64,5 +65,9 @@ public class RosJasonNode extends AbstractNodeMain{
 		List<String> aux = new ArrayList<String>(actions_status);
 		actions_status.clear();
 		return aux;
+	}
+
+	public boolean Connected() {
+		return this.connected;
 	}
 }
