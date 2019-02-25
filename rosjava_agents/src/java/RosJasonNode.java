@@ -40,8 +40,8 @@ public class RosJasonNode extends AbstractNodeMain {
       }
     });
 
-    Subscriber<std_msgs.String> actionsStatusSub = connectedNode.newSubscriber(
-        "/jason/action_status", std_msgs.String._TYPE);
+		Subscriber<std_msgs.String> actionsStatusSub =
+		connectedNode.newSubscriber("/jason/actions_status", std_msgs.String._TYPE);
 
     actionsStatusSub.addMessageListener(new MessageListener<std_msgs.String>() {
       @Override
