@@ -1,11 +1,10 @@
-FROM ros:kinetic-ros-core
+FROM ros:melodic-ros-core
 
 # Install packages
 RUN apt-get update && apt-get install -y \
 	vim \
 	default-jdk \
 	gradle  \
-	maven \
 	&& rm -rf /var/lib/apt/lists/
 
 # Set java home
