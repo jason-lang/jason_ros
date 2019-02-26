@@ -1,5 +1,7 @@
 FROM rezenders/beaglebone-black-ubuntu-openjdk-ros
 
+COPY qemu-arm-static /usr/bin
+
 # Install packages
 RUN apt-get update && apt-get install -y \
 	git \
