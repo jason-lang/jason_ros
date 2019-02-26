@@ -1,7 +1,14 @@
 # jason-ros
-ROS package for jason
+## Description
+This repository is being used to develop a possible integration between Jason and ROS.
 
+This is being done by customizing the agent architecture, AgArch class, to include ROS functionalities. And in order to add those functionalities [rosjava](http://wiki.ros.org/rosjava) and [rosbridge java api](https://github.com/Rezenders/java_rosbridge) are being explored. We will take in consideration the advanteges and disadvantages of both before commiting to one.
+
+Docker images containing this repo and needed environment can be found at [dockerhub](https://cloud.docker.com/u/rezenders/repository/docker/rezenders/jason-ros).
+
+armv7 version at branch [armv7](https://github.com/Rezenders/jason-ros/tree/armv7)
 ## Usage
+### Rosbridge Usage
 
 Build image
 ```
