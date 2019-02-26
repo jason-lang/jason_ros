@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /
 RUN ["/bin/bash", "-c", "git clone https://github.com/jason-lang/jason.git"]
 WORKDIR /jason
-RUN ["/bin/bash", "-c", "gradle config --info"]
+RUN ["/bin/bash", "-c", "gradle config --info --stacktrace --debug"]
 ENV JASON_HOME=/jason/build
 ENV PATH=$JASON_HOME/scripts:$PATH
 
