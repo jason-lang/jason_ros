@@ -10,6 +10,9 @@ RUN apt-get update && apt-get install -y \
 	ros-melodic-rosbridge-server \
 	&& rm -rf /var/lib/apt/lists/
 
+# Fix gradle bug
+ENV  _JAVA_OPTIONS=-Djava.net.preferIPv4Stack=true
+
 # Download, install and configure Jason
 WORKDIR /
 RUN ["/bin/bash", "-c", "git clone https://github.com/jason-lang/jason.git"]
