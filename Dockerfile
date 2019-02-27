@@ -1,4 +1,4 @@
-FROM rezenders/armv7hf-ubuntu-openjdk-ros:11-jdk-bionic
+FROM rezenders/armv7hf-ubuntu-openjdk-ros:8-jdk-bionic
 
 # Install packages
 RUN apt-get update && apt-get install -y \
