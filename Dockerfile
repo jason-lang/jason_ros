@@ -1,4 +1,4 @@
-FROM rezenders/beaglebone-black-ubuntu-openjdk-ros
+FROM rezenders/armv7hf-ubuntu-openjdk-ros:8-jdk-bionic
 
 
 # Install packages
