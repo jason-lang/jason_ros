@@ -1,4 +1,4 @@
-FROM rezenders/beaglebone-black-ubuntu-openjdk-ros
+FROM rezenders/armv7hf-ubuntu-openjdk-ros:11-jdk-bionic
 
 COPY qemu-arm-static /usr/bin
 
