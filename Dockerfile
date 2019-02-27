@@ -1,7 +1,5 @@
 FROM rezenders/armv7hf-ubuntu-openjdk-ros:11-jdk-bionic
 
-COPY qemu-arm-static /usr/bin
-
 # Install packages
 RUN apt-get update && apt-get install -y \
 	git \
@@ -9,9 +7,6 @@ RUN apt-get update && apt-get install -y \
 	maven \
 	ros-melodic-rosbridge-server \
 	&& rm -rf /var/lib/apt/lists/
-
-# Fix gradle bug
-ENV  _JAVA_OPTIONS=-Djava.net.preferIPv4Stack=true
 
 # Download, install and configure Jason
 WORKDIR /
