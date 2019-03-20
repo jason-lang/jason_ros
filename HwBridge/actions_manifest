@@ -1,0 +1,11 @@
+[takeoff]
+comm_method = service
+comm_name = /mavros/cmd/takeoff
+comm_msg = mavros_msgs.srv.CommandTOL
+dependencies = re
+
+[setpoint]
+comm_method = topic
+comm_name = /mavros/setpoint_position/global
+comm_msg = mavros_msgs.msg.GlobalPositionTarget
+dependencies = re
