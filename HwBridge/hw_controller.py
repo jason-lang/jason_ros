@@ -14,8 +14,8 @@ class ActionInfo:
 
     def fill_data(self, action_name, reader):
         self.name = action_name
-        if reader.has_option(action_name, "com_method"):
-            self.comm_method = reader.get(action_name, "com_method")
+        if reader.has_option(action_name, "comm_method"):
+            self.comm_method = reader.get(action_name, "comm_method")
         if reader.has_option(action_name, "comm_msg"):
             self.comm_msg = reader.get(action_name, "comm_msg")
         if reader.has_option(action_name, "comm_name"):
