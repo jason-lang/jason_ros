@@ -29,12 +29,7 @@ class ActionController:
     def __init__(self):
         self.action_dict = dict()
 
-    def read_manifest(self):
-        reader = ConfigParser.RawConfigParser()
-        reader.read('actions_manifest')
-        self.get_info(reader)
-
-    def read_manifest(self, filename):
+    def read_manifest(self, filename="actions_manifest"):
         reader = ConfigParser.RawConfigParser()
         man_path = Path(filename)
         if man_path.is_file():
