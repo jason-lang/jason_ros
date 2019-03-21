@@ -2,4 +2,4 @@
 comm_name = /mavros/state
 comm_msg = State
 dependencies = mavros_msgs.msg
-data = data, mode, armed, teste, 32
+data = mode, armed

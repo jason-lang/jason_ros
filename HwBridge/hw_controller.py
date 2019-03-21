@@ -12,18 +12,22 @@ class CommInfo:
         self.comm_name = ""
         self.dependencies = ""
         self.module = None
+        self.data = []
 
-    def fill_data(self, comm_name, reader):
-        self.name = comm_name
-        if reader.has_option(comm_name, "comm_method"):
-            self.comm_method = reader.get(comm_name, "comm_method")
-        if reader.has_option(comm_name, "comm_msg"):
-            self.comm_msg = reader.get(comm_name, "comm_msg")
-        if reader.has_option(comm_name, "comm_name"):
-            self.comm_name = reader.get(comm_name, "comm_name")
-        if reader.has_option(comm_name, "dependencies"):
-            self.dependencies = reader.get(comm_name, "dependencies")
+    def fill_data(self, name, reader):
+        self.name = name
+        if reader.has_option(name, "comm_method"):
+            self.comm_method = reader.get(name, "comm_method")
+        if reader.has_option(name, "comm_msg"):
+            self.comm_msg = reader.get(name, "comm_msg")
+        if reader.has_option(name, "comm_name"):
+            self.comm_name = reader.get(name, "comm_name")
+        if reader.has_option(name, "dependencies"):
+            self.dependencies = reader.get(name, "dependencies")
             self.module = importlib.import_module(self.dependencies)
+        if reader.has_option(name, "data"):
+            data_aux = reader.get(name, "data")
+            self.data = [x.strip() for x in data_aux.split(',')]
 
 class CommController:
     def __init__(self):
@@ -96,5 +100,10 @@ class PerceptionController(CommController):
                 perception.name
             )
 
-    def subscriber_callback(self, data, name):
-        self.perceptions[name] = data;
+    def subscriber_callback(self, msg, name):
+        perception_param = []
+        for d in self.comm_dict[name].data:
+            if hasattr(msg, d):
+                perception_param.append(getattr(msg,d))
+        perception_param = map(str, perception_param)
+        self.perceptions[name] = name + '(' + ','.join(perception_param) + ')';

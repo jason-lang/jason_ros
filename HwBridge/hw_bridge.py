@@ -18,7 +18,7 @@ def main():
     p.read_manifest()
     p.start_perceiving()
     while not rospy.is_shutdown():
-        print(p.perceptions)
+        print(p.perceptions.values())
         rate.sleep()
     rospy.spin()
 
