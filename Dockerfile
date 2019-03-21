@@ -5,6 +5,7 @@ RUN apt-get update && apt-get install -y \
 	vim \
 	default-jdk \
 	gradle  \
+	python-pathlib \
 	&& rm -rf /var/lib/apt/lists/
 
 # Set java home
