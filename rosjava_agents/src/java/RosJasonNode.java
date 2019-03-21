@@ -16,7 +16,10 @@ import org.ros.message.MessageListener;
 
 public class RosJasonNode extends AbstractNodeMain {
   Publisher<std_msgs.String> actionPub;
-  Literal perception = null;
+  // Literal perception = null;
+  List<Literal> perception = new List<Literal>();
+  // Map<String, Literal> perception = new HashMap<String, Literal>();
+
   List<String> actions_status = new ArrayList<String>();
   boolean connected;
 
@@ -36,7 +39,9 @@ public class RosJasonNode extends AbstractNodeMain {
     perceptsSub.addMessageListener(new MessageListener<std_msgs.String>() {
       @Override
       public void onNewMessage(std_msgs.String message) {
-        perception = Literal.parseLiteral(message.getData());
+         Literal new_perception = Literal.parseLiteral(message.getData());
+         perception.add(new_perception);
+        // perception.put(getPredicate(new_perception), new_perception);
       }
     });
 
@@ -52,7 +57,7 @@ public class RosJasonNode extends AbstractNodeMain {
     this.connected = true;
   }
 
-  public Literal getPerception() { return perception; }
+  public  List<Literal> getPerception() { return perception; }
 
   public void publishAction(String action) {
     std_msgs.String str = actionPub.newMessage();

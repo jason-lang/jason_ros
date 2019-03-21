@@ -66,9 +66,10 @@ public class RosjavaArch extends AgArch {
   @Override
   public List<Literal> perceive() {
     List<Literal> per = new ArrayList<Literal>();
-    Literal perception = rosNode.getPerception();
-    if (perception != null) {
-      per.add(perception);
+    // Map<String, Literal> perception = rosNode.getPerception();
+    List<Literal> perception = rosNode.getPerception();
+    if (perception != perception.isEmpty()) {
+      per.addAll(perception);
     }
     return per;
   }
@@ -78,8 +79,11 @@ public class RosjavaArch extends AgArch {
     String action_string = actionToString(action);
     rosNode.publishAction(action_string);
 
-    actionsWaiting.put(getPredicate(action_string),
-                       action); // TODO: Needs to be improved
+    action.setResult(true);
+    actionExecuted(action);
+    
+    // actionsWaiting.put(getPredicate(action_string),
+    //                    action); // TODO: Needs to be improved
   }
 
   public String actionToString(ActionExec action) {
