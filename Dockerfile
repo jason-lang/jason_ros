@@ -21,4 +21,6 @@ ENV PATH=$JASON_HOME/scripts:$PATH
 COPY rosjava_agents/ /rosjava_agents/
 WORKDIR /rosjava_agents
 
+COPY HwBridge/ /HwBridge
+WORKDIR /HwBridge
 CMD ["bash"]
