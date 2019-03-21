@@ -1,8 +1,9 @@
 #!/usr/bin/env python2
 import ConfigParser
 import importlib
-from pathlib import Path
+import itertools
 import rospy
+from pathlib import Path
 
 class CommInfo:
     def __init__(self):
@@ -13,6 +14,7 @@ class CommInfo:
         self.dependencies = ""
         self.module = None
         self.data = []
+        self.params_dict = dict()
 
     def fill_data(self, name, reader):
         self.name = name
@@ -28,6 +30,21 @@ class CommInfo:
         if reader.has_option(name, "data"):
             data_aux = reader.get(name, "data")
             self.data = [x.strip() for x in data_aux.split(',')]
+        if reader.has_option(name, "params_name"):
+            aux_name = reader.get(name, "params_name")
+            if reader.has_option(name, "params_type"):
+                aux_type = reader.get(name, "params_type")
+                self.params_dict = {x.strip():y.strip()  for x,y in itertools.izip(aux_name.split(','),aux_type.split(','))}
+            else:
+                self.params_dict = {x.strip():"str"  for x in aux_name.split(',')}
+
+    def convert_params(self, **kw):
+        converted = dict()
+        for k in kw:
+            if self.params_dict.has_key(k):
+                converted[k]= vars(__builtins__)[self.params_dict[k]](kw[k])
+
+        return converted
 
 class CommController:
     def __init__(self):
@@ -64,11 +81,12 @@ class ActionController(CommController):
 
     def perform_action(self, action_name, **kw):
         action = self.comm_dict[action_name]
+        converted_kw = action.convert_params(**kw)
         if action.comm_method == "service":
             rospy.wait_for_service(action.comm_name)
             try:
                 service_aux = rospy.ServiceProxy(action.comm_name, getattr(action.module, action.comm_msg))
-                service_aux(**kw)
+                service_aux(**converted_kw)
             except rospy.ServiceException as e:
                 print("service "+ action.comm_name +" call failed: %s." % e)
         elif action.comm_method == "topic":
@@ -77,7 +95,7 @@ class ActionController(CommController):
                 getattr(action.module, action.comm_msg),
                 queue_size=1,
                 latch=True) #TODO:Verificar esse queue_size e latch se precisa ser esses
-            topic_pub.publish(**kw)
+            topic_pub.publish(**converted_kw)
         else:
             print("Comm_method" + action.comm_method + " not available.")
 

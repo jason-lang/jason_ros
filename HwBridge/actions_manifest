@@ -3,21 +3,5 @@ comm_method = topic
 comm_name = /hw/teste
 comm_msg = String
 dependencies = std_msgs.msg
-
-[set_mode]
-comm_method = service
-comm_name = /mavros/set_mode
-comm_msg = SetMode
-dependencies = mavros_msgs.srv
-
-[takeoff]
-comm_method = service
-comm_name = /mavros/cmd/takeoff
-comm_msg = CommandTOL
-dependencies = re
-
-[setpoint]
-comm_method = topic
-comm_name = /mavros/setpoint_position/global
-comm_msg = GlobalPositionTarget
-dependencies = re
+params_name = teste1, teste2
+params_type = str, bool

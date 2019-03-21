@@ -2,6 +2,7 @@
 from hw_controller import *
 import rospy
 import std_msgs.msg
+import re
 
 def decompose(data):
     predicate = re.match('[^\(]*', data).group(0)
@@ -10,8 +11,7 @@ def decompose(data):
         arguments = re.findall('\((.*?)\)', data)[0].split(',')
         for args in arguments:
             args_ = args.split('=')
-            if len(args_)>1:
-                args_dict[args_[0]] = float(args_[1]) #TODO: always float? could be boolean?
+            args_dict[args_[0]] = args_[1]
     except IndexError:
         pass
 
