@@ -68,7 +68,7 @@ public class RosjavaArch extends AgArch {
     List<Literal> per = new ArrayList<Literal>();
     // Map<String, Literal> perception = rosNode.getPerception();
     List<Literal> perception = rosNode.getPerception();
-    if (perception != perception.isEmpty()) {
+    if (!perception.isEmpty()) {
       per.addAll(perception);
     }
     return per;
@@ -81,7 +81,7 @@ public class RosjavaArch extends AgArch {
 
     action.setResult(true);
     actionExecuted(action);
-    
+
     // actionsWaiting.put(getPredicate(action_string),
     //                    action); // TODO: Needs to be improved
   }

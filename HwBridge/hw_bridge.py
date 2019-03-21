@@ -1,5 +1,7 @@
 #!/usr/bin/env python2
 from hw_controller import *
+import rospy
+import std_msgs.msg
 
 def decompose(data):
     predicate = re.match('[^\(]*', data).group(0)
@@ -47,7 +49,7 @@ def main():
         print(perception_controller.perceptions.values())
         for p in perception_controller.perceptions.values():
             jason_percepts_pub.publish(p)
-            
+
         rate.sleep()
     rospy.spin()
 

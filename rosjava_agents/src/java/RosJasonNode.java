@@ -17,7 +17,7 @@ import org.ros.message.MessageListener;
 public class RosJasonNode extends AbstractNodeMain {
   Publisher<std_msgs.String> actionPub;
   // Literal perception = null;
-  List<Literal> perception = new List<Literal>();
+  List<Literal> perception = new ArrayList<Literal>();
   // Map<String, Literal> perception = new HashMap<String, Literal>();
 
   List<String> actions_status = new ArrayList<String>();
