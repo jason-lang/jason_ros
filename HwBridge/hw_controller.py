@@ -3,6 +3,7 @@ import ConfigParser
 import importlib
 import itertools
 import rospy
+import __builtin__
 from pathlib import Path
 
 class CommInfo:
@@ -42,7 +43,7 @@ class CommInfo:
         converted = dict()
         for k in kw:
             if self.params_dict.has_key(k):
-                converted[k]= vars(__builtins__)[self.params_dict[k]](kw[k])
+                converted[k]= getattr(__builtin__, self.params_dict[k])(kw[k])
 
         return converted
 
