@@ -79,3 +79,22 @@ class ActionController(CommController):
 
     def action_completed(self, action_name):
         pass
+
+class PerceptionController(CommController):
+    def __init__(self):
+        CommController.__init__(self)
+        self.default_path = "perceptions_manifest"
+        self.subsciber_dict = dict()
+        self.perceptions = dict()
+
+    def start_perceiving(self):
+        for perception in self.comm_dict.itervalues():
+            self.subsciber_dict[perception.name] = rospy.Subscriber(
+                perception.comm_name,
+                getattr(perception.module, perception.comm_msg),
+                self.subscriber_callback,
+                perception.name
+            )
+
+    def subscriber_callback(self, data, name):
+        self.perceptions[name] = data;
