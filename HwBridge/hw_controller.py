@@ -4,6 +4,7 @@ import importlib
 import itertools
 import rospy
 import __builtin__
+import std_msgs.msg
 from pathlib import Path
 
 class CommInfo:
@@ -96,6 +97,11 @@ class ActionController(CommController):
                 getattr(action.module, action.comm_msg),
                 queue_size=1,
                 latch=True) #TODO:Verificar esse queue_size e latch se precisa ser esses
+
+            header = std_msgs.msg.Header()
+            header.stamp = rospy.Time.now()
+            converted_kw['header'] = header
+
             topic_pub.publish(**converted_kw)
         else:
             print("Comm_method" + action.comm_method + " not available.")
