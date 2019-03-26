@@ -19,7 +19,7 @@ import org.ros.node.NodeConfiguration;
 import org.ros.node.NodeMain;
 import org.ros.node.NodeMainExecutor;
 
-public class RosjavaArch extends AgArch {
+public class RosArch extends AgArch {
   RosJasonNode rosNode;
   Map<String, ActionExec> actionsWaiting = new HashMap<String, ActionExec>();
 
