@@ -1,6 +1,0 @@
-MAS rosbridge_agents {
-
-    infrastructure: Centralised
-
-    agents: sample_agent agentArchClass rosbridgeArch;
-}
