@@ -9,23 +9,21 @@ from pathlib import Path
 
 class CommInfo:
     def __init__(self):
+        self.method = ""
+        self.msg_type = ""
         self.name = ""
-        self.comm_method = ""
-        self.comm_msg = ""
-        self.comm_name = ""
         self.dependencies = ""
         self.module = None
         self.data = []
         self.params_dict = dict()
 
     def fill_data(self, name, reader):
-        self.name = name
-        if reader.has_option(name, "comm_method"):
-            self.comm_method = reader.get(name, "comm_method")
-        if reader.has_option(name, "comm_msg"):
-            self.comm_msg = reader.get(name, "comm_msg")
-        if reader.has_option(name, "comm_name"):
-            self.comm_name = reader.get(name, "comm_name")
+        if reader.has_option(name, "method"):
+            self.method = reader.get(name, "method")
+        if reader.has_option(name, "msg_type"):
+            self.msg_type = reader.get(name, "msg_type")
+        if reader.has_option(name, "name"):
+            self.name = reader.get(name, "name")
         if reader.has_option(name, "dependencies"):
             self.dependencies = reader.get(name, "dependencies")
             self.module = importlib.import_module(self.dependencies)
@@ -84,17 +82,17 @@ class ActionController(CommController):
     def perform_action(self, action_name, **kw):
         action = self.comm_dict[action_name]
         converted_kw = action.convert_params(**kw)
-        if action.comm_method == "service":
-            rospy.wait_for_service(action.comm_name)
+        if action.method == "service":
+            rospy.wait_for_service(action.name)
             try:
-                service_aux = rospy.ServiceProxy(action.comm_name, getattr(action.module, action.comm_msg))
+                service_aux = rospy.ServiceProxy(action.name, getattr(action.module, action.msg_type))
                 service_aux(**converted_kw)
             except rospy.ServiceException as e:
-                print("service "+ action.comm_name +" call failed: %s." % e)
-        elif action.comm_method == "topic":
+                print("service "+ action.name +" call failed: %s." % e)
+        elif action.method == "topic":
             topic_pub = rospy.Publisher(
-                action.comm_name,
-                getattr(action.module, action.comm_msg),
+                action.name,
+                getattr(action.module, action.msg_type),
                 queue_size=1,
                 latch=True) #TODO:Verificar esse queue_size e latch se precisa ser esses
 
@@ -104,7 +102,7 @@ class ActionController(CommController):
 
             topic_pub.publish(**converted_kw)
         else:
-            print("Comm_method" + action.comm_method + " not available.")
+            print("method" + action.method + " not available.")
 
     def action_completed(self, action_name):
         pass
@@ -117,12 +115,14 @@ class PerceptionController(CommController):
         self.perceptions = dict()
 
     def start_perceiving(self):
-        for perception in self.comm_dict.itervalues():
-            self.subsciber_dict[perception.name] = rospy.Subscriber(
-                perception.comm_name,
-                getattr(perception.module, perception.comm_msg),
+        for comm in self.comm_dict.items():
+            name = comm[0]
+            perception = comm[1]
+            self.subsciber_dict[name] = rospy.Subscriber(
+                perception.name,
+                getattr(perception.module, perception.msg_type),
                 self.subscriber_callback,
-                perception.name
+                name
             )
 
     def subscriber_callback(self, msg, name):

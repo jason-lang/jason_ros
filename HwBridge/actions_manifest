@@ -1,7 +1,7 @@
 [teste]
-comm_method = topic
-comm_name = /hw/teste
-comm_msg = String
+method = topic
+name = /hw/teste
+msg_type = String
 dependencies = std_msgs.msg
 params_name = teste1, teste2
 params_type = str, bool
