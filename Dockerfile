@@ -20,6 +20,8 @@ ENV JASON_HOME=/jason/build
 ENV PATH=$JASON_HOME/scripts:$PATH
 
 COPY rosjava_agents/ /rosjava_agents/
+WORKDIR /rosjava_agents
+RUN ["/bin/bash","-c","gradle build"]
 
 COPY HwBridge/ /HwBridge
 WORKDIR /HwBridge
