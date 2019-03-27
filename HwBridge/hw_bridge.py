@@ -17,12 +17,13 @@ def decompose(data):
 
     return predicate, args_dict
 
-def act(msg):
+def act(msg, pub):
     action_controller = ActionController()
     action_controller.read_manifest()
 
     action_name, args = decompose(msg.data)
     action_controller.perform_action(action_name, **args)
+    pub.publish("done("+action_name+")")
 
 
 def main():
@@ -36,14 +37,22 @@ def main():
     queue_size=1,
     latch=False)
 
+
     perception_controller = PerceptionController()
     perception_controller.read_manifest()
     perception_controller.start_perceiving()
 
+    jason_actions_status_pub = rospy.Publisher(
+    '/jason/actions_status',
+    std_msgs.msg.String,
+    queue_size=1,
+    latch=False)
+
     jason_action_sub = rospy.Subscriber(
         '/jason/actions',
         std_msgs.msg.String,
-        act)
+        act, jason_actions_status_pub)
+
 
     while not rospy.is_shutdown():
         print(perception_controller.perceptions.values())

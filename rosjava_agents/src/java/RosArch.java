@@ -79,11 +79,8 @@ public class RosArch extends AgArch {
     String action_string = actionToString(action);
     rosNode.publishAction(action_string);
 
-    action.setResult(true);
-    actionExecuted(action);
-
-    // actionsWaiting.put(getPredicate(action_string),
-    //                    action); // TODO: Needs to be improved
+    actionsWaiting.put(getPredicate(action_string),
+                       action); // TODO: Needs to be improved
   }
 
   public String actionToString(ActionExec action) {
