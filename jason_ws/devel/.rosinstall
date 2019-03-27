@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /root/jason-ros/jason_ws/devel/setup.sh
