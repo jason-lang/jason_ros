@@ -8,4 +8,7 @@
 
 /* Plans */
 
-+!start : true <- .print("hello world.").
++!start : true <-
+	teste("oioioi",333.4);
+	bye(3,"zaassa",334343.333);
+	.print("hello world.").
