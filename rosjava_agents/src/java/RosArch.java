@@ -76,33 +76,14 @@ public class RosArch extends AgArch {
 
   @Override
   public void act(ActionExec action) {
-    String action_string = actionToString(action);
-    rosNode.publishAction(action_string);
+    int seq = rosNode.publishAction(action);
 
-    actionsWaiting.put(getPredicate(action_string),
-                       action); // TODO: Needs to be improved
-  }
+    action.setResult(true);
+    System.out.println(seq);
+    actionExecuted(action);
 
-  public String actionToString(ActionExec action) {
-    String s = action.getActionTerm().getFunctor();
-    List<Term> terms = action.getActionTerm().getTerms();
-    if (action.getActionTerm().hasTerm()) {
-      s = s + "(";
-      for (Term term : terms) {
-        if (term.isString()) {
-          s = s + ((StringTerm)term).getString() + ",";
-        } else if (term.isNumeric()) {
-          try {
-            s = s + Double.toString(((NumberTerm)term).solve()) + ",";
-          } catch (Exception e) {
-            e.printStackTrace();
-          }
-        }
-      }
-      s = s.substring(0, s.length() - 1) +
-          ")"; // take last ',' out and close with ')'
-    }
-    return s;
+    // actionsWaiting.put(getPredicate(action_string),
+    //                    action); // TODO: Needs to be improved
   }
 
   public void actionsStatus(String data) {

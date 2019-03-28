@@ -14,8 +14,10 @@ import org.ros.node.topic.Publisher;
 import org.ros.node.topic.Subscriber;
 import org.ros.message.MessageListener;
 
+import jason_msgs.Action;
+
 public class RosJasonNode extends AbstractNodeMain {
-  Publisher<std_msgs.String> actionPub;
+  Publisher<jason_msgs.Action> actionPub;
   // Literal perception = null;
   List<Literal> perception = new ArrayList<Literal>();
   // Map<String, Literal> perception = new HashMap<String, Literal>();
@@ -31,7 +33,7 @@ public class RosJasonNode extends AbstractNodeMain {
   @Override
   public void onStart(final ConnectedNode connectedNode) {
     actionPub =
-        connectedNode.newPublisher("/jason/actions", std_msgs.String._TYPE);
+        connectedNode.newPublisher("/jason/actions", jason_msgs.Action._TYPE);
 
     Subscriber<std_msgs.String> perceptsSub =
         connectedNode.newSubscriber("/jason/percepts", std_msgs.String._TYPE);
@@ -59,10 +61,24 @@ public class RosJasonNode extends AbstractNodeMain {
 
   public  List<Literal> getPerception() { return perception; }
 
-  public void publishAction(String action) {
-    std_msgs.String str = actionPub.newMessage();
-    str.setData(action);
-    actionPub.publish(str);
+  public int publishAction(ActionExec action) {
+    jason_msgs.Action act = actionPub.newMessage();
+    act.setActionName(action.getActionTerm().getFunctor());
+
+    if (action.getActionTerm().hasTerm()) {
+        List<String> params = new ArrayList<String>();
+        for (Term term : action.getActionTerm().getTerms()) {
+            if(term.isString()){
+                params.add(((StringTerm)term).getString());
+            }else{
+                params.add(String.valueOf(term));
+            }
+        }
+        act.setParameters(params);
+    }
+    actionPub.publish(act);
+    std_msgs.Header header = act.getHeader();
+    return header.getSeq();
   }
 
   public List<String> retrieveStatus() {
