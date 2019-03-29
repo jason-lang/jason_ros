@@ -1,0 +1,8 @@
+prefix=/root/jason-ros/jason_ws/devel
+
+Name: jason_msgs
+Description: Description of jason_msgs
+Version: 0.0.0
+Cflags: -I/root/jason-ros/jason_ws/devel/include
+Libs: -L/root/jason-ros/jason_ws/devel/lib 
+Requires: message_generation message_runtime std_msgs
