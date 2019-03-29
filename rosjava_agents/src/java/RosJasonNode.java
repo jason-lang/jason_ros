@@ -8,6 +8,7 @@ import org.apache.commons.logging.Log;
 import org.ros.concurrent.CancellableLoop;
 import org.ros.namespace.GraphName;
 import org.ros.node.AbstractNodeMain;
+import org.ros.node.NodeConfiguration;
 import org.ros.node.ConnectedNode;
 import org.ros.node.NodeMain;
 import org.ros.node.topic.Publisher;
@@ -15,20 +16,22 @@ import org.ros.node.topic.Subscriber;
 import org.ros.message.MessageListener;
 
 import jason_msgs.Action;
+import jason_msgs.ActionStatus;
 
 public class RosJasonNode extends AbstractNodeMain {
-  Publisher<jason_msgs.Action> actionPub;
-  // Literal perception = null;
-  List<Literal> perception = new ArrayList<Literal>();
-  // Map<String, Literal> perception = new HashMap<String, Literal>();
+    NodeConfiguration nodeConfiguration = NodeConfiguration.newPrivate();
+    Publisher<jason_msgs.Action> actionPub;
+    // Literal perception = null;
+    List<Literal> perception = new ArrayList<Literal>();
+    // Map<String, Literal> perception = new HashMap<String, Literal>();
 
-  List<String> actions_status = new ArrayList<String>();
-  boolean connected;
+    List<jason_msgs.ActionStatus> actions_status = new ArrayList<jason_msgs.ActionStatus>();
+    boolean connected;
 
-  @Override
-  public GraphName getDefaultNodeName() {
+    @Override
+    public GraphName getDefaultNodeName() {
     return GraphName.of("jason/agent");
-  }
+    }
 
   @Override
   public void onStart(final ConnectedNode connectedNode) {
@@ -47,13 +50,13 @@ public class RosJasonNode extends AbstractNodeMain {
       }
     });
 
-		Subscriber<std_msgs.String> actionsStatusSub =
-		connectedNode.newSubscriber("/jason/actions_status", std_msgs.String._TYPE);
+		Subscriber<jason_msgs.ActionStatus> actionsStatusSub =
+		connectedNode.newSubscriber("/jason/actions_status", jason_msgs.ActionStatus._TYPE);
 
-    actionsStatusSub.addMessageListener(new MessageListener<std_msgs.String>() {
+    actionsStatusSub.addMessageListener(new MessageListener<jason_msgs.ActionStatus>() {
       @Override
-      public void onNewMessage(std_msgs.String message) {
-        actions_status.add(message.getData());
+      public void onNewMessage(jason_msgs.ActionStatus message) {
+        actions_status.add(message);
       }
     });
     this.connected = true;
@@ -63,6 +66,10 @@ public class RosJasonNode extends AbstractNodeMain {
 
   public int publishAction(ActionExec action) {
     jason_msgs.Action act = actionPub.newMessage();
+
+    std_msgs.Header header = nodeConfiguration.getTopicMessageFactory().newFromType(std_msgs.Header._TYPE);
+    act.setHeader(header);
+
     act.setActionName(action.getActionTerm().getFunctor());
 
     if (action.getActionTerm().hasTerm()) {
@@ -76,13 +83,13 @@ public class RosJasonNode extends AbstractNodeMain {
         }
         act.setParameters(params);
     }
+
     actionPub.publish(act);
-    std_msgs.Header header = act.getHeader();
     return header.getSeq();
   }
 
-  public List<String> retrieveStatus() {
-    List<String> aux = new ArrayList<String>(actions_status);
+  public List<jason_msgs.ActionStatus> retrieveStatus() {
+    List<jason_msgs.ActionStatus> aux = new ArrayList<jason_msgs.ActionStatus>(actions_status);
     actions_status.clear();
     return aux;
   }

@@ -19,9 +19,11 @@ import org.ros.node.NodeConfiguration;
 import org.ros.node.NodeMain;
 import org.ros.node.NodeMainExecutor;
 
+import jason_msgs.ActionStatus;
+
 public class RosArch extends AgArch {
   RosJasonNode rosNode;
-  Map<String, ActionExec> actionsWaiting = new HashMap<String, ActionExec>();
+  Map<Integer, ActionExec> actionsWaiting = new HashMap<Integer, ActionExec>();
 
   @Override
   public void init() throws Exception {
@@ -56,8 +58,8 @@ public class RosArch extends AgArch {
 
   @Override
   public void reasoningCycleStarting() {
-    List<String> actions_status = rosNode.retrieveStatus();
-    for (String status : actions_status) {
+    List<jason_msgs.ActionStatus> actions_status = rosNode.retrieveStatus();
+    for (jason_msgs.ActionStatus status : actions_status) {
       actionsStatus(status);
     }
     super.reasoningCycleStarting();
@@ -78,63 +80,31 @@ public class RosArch extends AgArch {
   public void act(ActionExec action) {
     int seq = rosNode.publishAction(action);
 
-    action.setResult(true);
     System.out.println(seq);
-    actionExecuted(action);
+    // action.setResult(true);
+    // actionExecuted(action);
 
-    // actionsWaiting.put(getPredicate(action_string),
-    //                    action); // TODO: Needs to be improved
+    actionsWaiting.put(seq, action);
   }
 
-  public void actionsStatus(String data) {
-    String action_status = getPredicate(data);
-    String action_name = getArgs(data);
+  public void actionsStatus(jason_msgs.ActionStatus data) {
+    int id = data.getId();
+    boolean result = data.getResult();
 
-    if (action_status != null && action_name != null) {
-      // System.out.println("Action: " + action_name + " Status: " +
-      // action_status);
-      ActionExec action = actionsWaiting.get(action_name);
+    ActionExec action = actionsWaiting.get(id);
 
-      if (action != null) {
-        if (action_status.equals("done")) {
+    if (action != null) {
+        if (result) {
           action.setResult(true);
           actionExecuted(action);
-        } else if (action_status.equals("fail")) {
-          action.setResult(false);
-          actionExecuted(action);
         } else {
-          System.out.println("Status" + action_status +
-                             "unknown. Setting action " + action_name +
-                             " as failed!");
           action.setResult(false);
           actionExecuted(action);
         }
-        actionsWaiting.remove(action_name);
-      } else {
-        System.out.println("Action " + action_name + " not found.");
-      }
+        actionsWaiting.remove(id);
     } else {
-      System.out.println("Couldn't confirm action status");
+        System.out.println("Action not found.");
     }
   }
 
-  public String getPredicate(String data) {
-    Pattern p = Pattern.compile("[^(]*");
-    Matcher m = p.matcher(data);
-    String predicate = null;
-    if (m.find()) {
-      predicate = m.group(0);
-    }
-    return predicate;
-  }
-
-  public String getArgs(String data) {
-    Pattern p = Pattern.compile("\\((.*?)\\)");
-    Matcher m = p.matcher(data);
-    String args = null;
-    if (m.find()) {
-      args = m.group(1);
-    }
-    return args;
-  }
 }
