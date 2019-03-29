@@ -15,6 +15,7 @@
 #include <ros/builtin_message_traits.h>
 #include <ros/message_operations.h>
 
+#include <std_msgs/Header.h>
 
 namespace jason_msgs
 {
@@ -24,14 +25,27 @@ struct ActionStatus_
   typedef ActionStatus_<ContainerAllocator> Type;
 
   ActionStatus_()
-    {
+    : header()
+    , result(false)
+    , id(0)  {
     }
   ActionStatus_(const ContainerAllocator& _alloc)
-    {
+    : header(_alloc)
+    , result(false)
+    , id(0)  {
   (void)_alloc;
     }
 
 
+
+   typedef  ::std_msgs::Header_<ContainerAllocator>  _header_type;
+  _header_type header;
+
+   typedef uint8_t _result_type;
+  _result_type result;
+
+   typedef uint32_t _id_type;
+  _id_type id;
 
 
 
@@ -67,7 +81,7 @@ namespace message_traits
 
 
 
-// BOOLTRAITS {'IsFixedSize': True, 'IsMessage': True, 'HasHeader': False}
+// BOOLTRAITS {'IsFixedSize': False, 'IsMessage': True, 'HasHeader': True}
 // {'std_msgs': ['/opt/ros/melodic/share/std_msgs/cmake/../msg'], 'jason_msgs': ['/root/jason-ros/jason_ws/src/jason_msgs/msg']}
 
 // !!!!!!!!!!! ['__class__', '__delattr__', '__dict__', '__doc__', '__eq__', '__format__', '__getattribute__', '__hash__', '__init__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_parsed_fields', 'constants', 'fields', 'full_name', 'has_header', 'header_present', 'names', 'package', 'parsed_fields', 'short_name', 'text', 'types']
@@ -77,12 +91,12 @@ namespace message_traits
 
 template <class ContainerAllocator>
 struct IsFixedSize< ::jason_msgs::ActionStatus_<ContainerAllocator> >
-  : TrueType
+  : FalseType
   { };
 
 template <class ContainerAllocator>
 struct IsFixedSize< ::jason_msgs::ActionStatus_<ContainerAllocator> const>
-  : TrueType
+  : FalseType
   { };
 
 template <class ContainerAllocator>
@@ -97,12 +111,12 @@ struct IsMessage< ::jason_msgs::ActionStatus_<ContainerAllocator> const>
 
 template <class ContainerAllocator>
 struct HasHeader< ::jason_msgs::ActionStatus_<ContainerAllocator> >
-  : FalseType
+  : TrueType
   { };
 
 template <class ContainerAllocator>
 struct HasHeader< ::jason_msgs::ActionStatus_<ContainerAllocator> const>
-  : FalseType
+  : TrueType
   { };
 
 
@@ -111,12 +125,12 @@ struct MD5Sum< ::jason_msgs::ActionStatus_<ContainerAllocator> >
 {
   static const char* value()
   {
-    return "d41d8cd98f00b204e9800998ecf8427e";
+    return "bd2ff4c1c257386dae20268cf70a828d";
   }
 
   static const char* value(const ::jason_msgs::ActionStatus_<ContainerAllocator>&) { return value(); }
-  static const uint64_t static_value1 = 0xd41d8cd98f00b204ULL;
-  static const uint64_t static_value2 = 0xe9800998ecf8427eULL;
+  static const uint64_t static_value1 = 0xbd2ff4c1c257386dULL;
+  static const uint64_t static_value2 = 0xae20268cf70a828dULL;
 };
 
 template<class ContainerAllocator>
@@ -135,7 +149,27 @@ struct Definition< ::jason_msgs::ActionStatus_<ContainerAllocator> >
 {
   static const char* value()
   {
-    return "\n\
+    return "Header header\n\
+bool result\n\
+uint32 id\n\
+\n\
+================================================================================\n\
+MSG: std_msgs/Header\n\
+# Standard metadata for higher-level stamped data types.\n\
+# This is generally used to communicate timestamped data \n\
+# in a particular coordinate frame.\n\
+# \n\
+# sequence ID: consecutively increasing ID \n\
+uint32 seq\n\
+#Two-integer timestamp that is expressed as:\n\
+# * stamp.sec: seconds (stamp_secs) since epoch (in Python the variable is called 'secs')\n\
+# * stamp.nsec: nanoseconds since stamp_secs (in Python the variable is called 'nsecs')\n\
+# time-handling sugar is provided by the client library\n\
+time stamp\n\
+#Frame this data is associated with\n\
+# 0: no frame\n\
+# 1: global frame\n\
+string frame_id\n\
 ";
   }
 
@@ -152,8 +186,12 @@ namespace serialization
 
   template<class ContainerAllocator> struct Serializer< ::jason_msgs::ActionStatus_<ContainerAllocator> >
   {
-    template<typename Stream, typename T> inline static void allInOne(Stream&, T)
-    {}
+    template<typename Stream, typename T> inline static void allInOne(Stream& stream, T m)
+    {
+      stream.next(m.header);
+      stream.next(m.result);
+      stream.next(m.id);
+    }
 
     ROS_DECLARE_ALLINONE_SERIALIZER
   }; // struct ActionStatus_
@@ -169,8 +207,16 @@ namespace message_operations
 template<class ContainerAllocator>
 struct Printer< ::jason_msgs::ActionStatus_<ContainerAllocator> >
 {
-  template<typename Stream> static void stream(Stream&, const std::string&, const ::jason_msgs::ActionStatus_<ContainerAllocator>&)
-  {}
+  template<typename Stream> static void stream(Stream& s, const std::string& indent, const ::jason_msgs::ActionStatus_<ContainerAllocator>& v)
+  {
+    s << indent << "header: ";
+    s << std::endl;
+    Printer< ::std_msgs::Header_<ContainerAllocator> >::stream(s, indent + "  ", v.header);
+    s << indent << "result: ";
+    Printer<uint8_t>::stream(s, indent + "  ", v.result);
+    s << indent << "id: ";
+    Printer<uint32_t>::stream(s, indent + "  ", v.id);
+  }
 };
 
 } // namespace message_operations

@@ -1,12 +1,12 @@
 
 "use strict";
 
-let Perception = require('./Perception.js');
-let ActionStatus = require('./ActionStatus.js');
 let Action = require('./Action.js');
+let ActionStatus = require('./ActionStatus.js');
+let Perception = require('./Perception.js');
 
 module.exports = {
-  Perception: Perception,
-  ActionStatus: ActionStatus,
   Action: Action,
+  ActionStatus: ActionStatus,
+  Perception: Perception,
 };
