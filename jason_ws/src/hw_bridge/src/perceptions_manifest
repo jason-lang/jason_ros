@@ -1,5 +1,5 @@
 [state]
-name = /mavros/state
-msg_type = State
-dependencies = mavros_msgs.msg
-data = mode, armed
+name = /hw/teste
+msg_type = String
+dependencies = std_msgs.msg
+data = data
