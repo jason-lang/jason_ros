@@ -25,4 +25,7 @@ WORKDIR /rosjava_agents
 
 COPY jason_ws/ /jason_ws
 WORKDIR /jason_ws
+
+COPY entrypoint.sh /
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["bash"]
