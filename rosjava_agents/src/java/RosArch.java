@@ -80,10 +80,6 @@ public class RosArch extends AgArch {
   public void act(ActionExec action) {
     int seq = rosNode.publishAction(action);
 
-    System.out.println(seq);
-    // action.setResult(true);
-    // actionExecuted(action);
-
     actionsWaiting.put(seq, action);
   }
 

@@ -21,10 +21,9 @@ ENV PATH=$JASON_HOME/scripts:$PATH
 
 COPY rosjava_agents/ /rosjava_agents/
 WORKDIR /rosjava_agents
-# RUN ["/bin/bash","-c","gradle build"]
+RUN ["/bin/bash","-c","gradle build"]
 
 COPY jason_ws/ /jason_ws
-WORKDIR /jason_ws
 
 COPY entrypoint.sh /
 ENTRYPOINT ["/entrypoint.sh"]
