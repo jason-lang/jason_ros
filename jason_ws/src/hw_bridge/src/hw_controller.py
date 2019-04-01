@@ -6,6 +6,7 @@ import rospy
 import __builtin__
 import std_msgs.msg
 from pathlib import Path
+from collections import OrderedDict
 
 class CommInfo:
     def __init__(self):
@@ -15,7 +16,7 @@ class CommInfo:
         self.dependencies = ""
         self.module = None
         self.data = []
-        self.params_dict = dict()
+        self.params_dict = OrderedDict()
 
     def fill_data(self, name, reader):
         if reader.has_option(name, "method"):
@@ -34,15 +35,14 @@ class CommInfo:
             aux_name = reader.get(name, "params_name")
             if reader.has_option(name, "params_type"):
                 aux_type = reader.get(name, "params_type")
-                self.params_dict = {x.strip():y.strip()  for x,y in itertools.izip(aux_name.split(','),aux_type.split(','))}
+                self.params_dict = OrderedDict((x.strip(),y.strip())  for x,y in itertools.izip(aux_name.split(','),aux_type.split(',')))
             else:
-                self.params_dict = {x.strip():"str"  for x in aux_name.split(',')}
+                self.params_dict = OrderedDict((x.strip(),"str")  for x in aux_name.split(','))
 
-    def convert_params(self, **kw):
+    def convert_params(self, params):
         converted = dict()
-        for k in kw:
-            if self.params_dict.has_key(k):
-                converted[k]= getattr(__builtin__, self.params_dict[k])(kw[k])
+        for p,k in zip(params, self.params_dict):
+            converted[k]= getattr(__builtin__, self.params_dict[k])(p)
 
         return converted
 
@@ -79,9 +79,9 @@ class ActionController(CommController):
     def executable_action(self, action_name):
         return (action_name in self.comm_dict.keys())
 
-    def perform_action(self, action_name, **kw):
+    def perform_action(self, action_name, params):
         action = self.comm_dict[action_name]
-        converted_kw = action.convert_params(**kw)
+        converted_kw = action.convert_params(params)
         if action.method == "service":
             rospy.wait_for_service(action.name)
             try:

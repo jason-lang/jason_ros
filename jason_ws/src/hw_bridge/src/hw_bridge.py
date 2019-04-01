@@ -5,26 +5,17 @@ import std_msgs.msg
 import re
 import jason_msgs.msg
 
-def decompose(data):
-    predicate = re.match('[^\(]*', data).group(0)
-    args_dict = dict()
-    try:
-        arguments = re.findall('\((.*?)\)', data)[0].split(',')
-        for args in arguments:
-            args_ = args.split('=')
-            args_dict[args_[0]] = args_[1]
-    except IndexError:
-        pass
-
-    return predicate, args_dict
-
 def act(msg, pub):
     action_controller = ActionController()
     action_controller.read_manifest()
 
-    action_name, args = decompose(msg.data)
-    action_controller.perform_action(action_name, **args)
-    pub.publish("done("+action_name+")")
+    action_controller.perform_action(msg.action_name, msg.parameters)
+
+    action_status = jason_msgs.msg.ActionStatus()
+    action_status.result = True #TODO:This can be improved
+    action_status.id = msg.header.seq
+
+    pub.publish(action_status)
 
 
 def main():
@@ -45,7 +36,7 @@ def main():
 
     jason_actions_status_pub = rospy.Publisher(
     '/jason/actions_status',
-    std_msgs.msg.String,
+    jason_msgs.msg.ActionStatus,
     queue_size=1,
     latch=False)
 
