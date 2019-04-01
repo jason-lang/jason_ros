@@ -24,6 +24,8 @@ WORKDIR /rosjava_agents
 RUN ["/bin/bash","-c","gradle build"]
 
 COPY jason_ws/ /jason_ws
+RUN [ "/bin/bash","-c","source /opt/ros/melodic/setup.bash && \
+                        cd /jason_ws && catkin_make"]
 
 COPY entrypoint.sh /
 ENTRYPOINT ["/entrypoint.sh"]
