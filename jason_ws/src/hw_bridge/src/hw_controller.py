@@ -5,6 +5,7 @@ import itertools
 import rospy
 import __builtin__
 import std_msgs.msg
+import jason_msgs.msg
 from pathlib import Path
 from collections import OrderedDict
 
@@ -17,6 +18,7 @@ class CommInfo:
         self.module = None
         self.data = []
         self.params_dict = OrderedDict()
+        self.insertion = ""
 
     def fill_data(self, name, reader):
         if reader.has_option(name, "method"):
@@ -38,6 +40,8 @@ class CommInfo:
                 self.params_dict = OrderedDict((x.strip(),y.strip())  for x,y in itertools.izip(aux_name.split(','),aux_type.split(',')))
             else:
                 self.params_dict = OrderedDict((x.strip(),"str")  for x in aux_name.split(','))
+        if reader.has_option(name, "insertion"):
+            self.insertion = reader.get(name, "insertion")
 
     def convert_params(self, params):
         converted = dict()
@@ -131,4 +135,13 @@ class PerceptionController(CommController):
             if hasattr(msg, d):
                 perception_param.append(getattr(msg,d))
         perception_param = map(str, perception_param)
-        self.perceptions[name] = name + '(' + ','.join(perception_param) + ')';
+
+        perception = jason_msgs.msg.Perception()
+        perception.perception_name = name
+        perception.parameters = perception_param
+        if(self.comm_dict[name].insertion == "add"):
+            perception.update = False
+        else:
+            perception.update = True
+
+        self.perceptions[name] = perception

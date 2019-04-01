@@ -3,3 +3,4 @@ name = /hw/teste
 msg_type = String
 dependencies = std_msgs.msg
 data = data
+insertion = update 

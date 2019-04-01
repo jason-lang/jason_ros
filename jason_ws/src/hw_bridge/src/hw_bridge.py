@@ -1,8 +1,8 @@
 #!/usr/bin/env python2
 from hw_controller import *
 import rospy
-import std_msgs.msg
 import re
+import std_msgs.msg
 import jason_msgs.msg
 
 def act(msg, pub):
@@ -25,7 +25,7 @@ def main():
 
     jason_percepts_pub = rospy.Publisher(
     '/jason/percepts',
-    std_msgs.msg.String,
+    jason_msgs.msg.Perception,
     queue_size=1,
     latch=False)
 
