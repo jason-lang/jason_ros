@@ -32,7 +32,7 @@ class CommInfo:
             self.module = importlib.import_module(self.dependencies)
         if reader.has_option(name, "data"):
             data_aux = reader.get(name, "data")
-            self.data = [x.strip() for x in data_aux.split(',')]
+            self.data = [y.split('.') for y in [x.strip() for x in data_aux.split(',')]]
         if reader.has_option(name, "params_name"):
             aux_name = reader.get(name, "params_name")
             if reader.has_option(name, "params_type"):
@@ -131,9 +131,13 @@ class PerceptionController(CommController):
 
     def subscriber_callback(self, msg, name):
         perception_param = []
-        for d in self.comm_dict[name].data:
-            if hasattr(msg, d):
-                perception_param.append(getattr(msg,d))
+        for data in self.comm_dict[name].data:
+            obj = msg
+            for d in data:
+                if hasattr(obj, d):
+                    obj = getattr(obj, d)
+                    if d is data[-1]:
+                        perception_param.append(obj)
         perception_param = map(str, perception_param)
 
         perception = jason_msgs.msg.Perception()
