@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -80,9 +81,30 @@ public class RosArch extends AgArch {
                 System.out.println("Error parsing perception parameters");
             }
         }
-        boolean update = perception.getUpdate();
-        if(update){
-            System.out.println("teste");
+
+        boolean bufUpdate = perception.getUpdate();
+        if(bufUpdate){
+            Iterator<Literal> ibb = getTS().getAg().getBB().getCandidateBeliefs(new PredicateIndicator(perception.getPerceptionName(), 1));
+            boolean addBelief = true;
+            while (ibb != null && ibb.hasNext()) {
+                Literal l = ibb.next();
+                if(l.equals(bel)){
+                    addBelief = false;
+                }else{
+                   try{
+                       getTS().getAg().delBel(l);
+                   }catch(RevisionFailedException e){
+                       System.out.println("Error adding new belief");
+                   }
+               }
+            }
+            if(addBelief){
+                try{
+                    getTS().getAg().addBel(bel);
+                }catch(RevisionFailedException e){
+                    System.out.println("Error adding new belief");
+                }
+            }
         }else{
             try{
                 getTS().getAg().addBel(bel);
