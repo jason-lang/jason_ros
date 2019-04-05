@@ -84,29 +84,41 @@ class ActionController(CommController):
         return (action_name in self.comm_dict.keys())
 
     def perform_action(self, action_name, params):
-        action = self.comm_dict[action_name]
-        converted_kw = action.convert_params(params)
-        if action.method == "service":
-            rospy.wait_for_service(action.name)
-            try:
-                service_aux = rospy.ServiceProxy(action.name, getattr(action.module, action.msg_type))
-                service_aux(**converted_kw)
-            except rospy.ServiceException as e:
-                print("service "+ action.name +" call failed: %s." % e)
-        elif action.method == "topic":
-            topic_pub = rospy.Publisher(
-                action.name,
-                getattr(action.module, action.msg_type),
-                queue_size=1,
-                latch=True) #TODO:Verificar esse queue_size e latch se precisa ser esses
+        action_completed = False
+        try:
+            action = self.comm_dict[action_name]
+            converted_kw = action.convert_params(params)
+            msg_type = getattr(action.module, action.msg_type)
+            if action.method == "service":
+                rospy.wait_for_service(action.name)
+                try:
+                    service_aux = rospy.ServiceProxy(action.name, msg_type)
+                    service_aux(**converted_kw)
+                except rospy.ServiceException as e:
+                    print("service "+ action.name +" call failed: %s." % e)
+                action_completed = True
+            elif action.method == "topic":
+                topic_pub = rospy.Publisher(
+                    action.name,
+                    msg_type,
+                    queue_size=1,
+                    latch=True) #TODO:Verificar esse queue_size e latch se precisa ser esses
 
-            header = std_msgs.msg.Header()
-            header.stamp = rospy.Time.now()
-            converted_kw['header'] = header
 
-            topic_pub.publish(**converted_kw)
-        else:
-            print("method" + action.method + " not available.")
+                if hasattr(msg_type, "header"):
+                    header = std_msgs.msg.Header()
+                    header.stamp = rospy.Time.now()
+                    converted_kw['header'] = header
+
+                topic_pub.publish(**converted_kw)
+                action_completed = True
+            else:
+                print("method " + action.method + " not available.")
+                action_completed = True
+        except KeyError:
+            action_completed = True
+
+        return action_completed
 
     def action_completed(self, action_name):
         pass

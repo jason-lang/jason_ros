@@ -9,11 +9,10 @@ def act(msg, pub):
     action_controller = ActionController()
     action_controller.read_manifest()
 
-    action_controller.perform_action(msg.action_name, msg.parameters)
-
     action_status = jason_msgs.msg.ActionStatus()
-    action_status.result = True #TODO:This can be improved
     action_status.id = msg.header.seq
+
+    action_status.result = action_controller.perform_action(msg.action_name, msg.parameters)
 
     pub.publish(action_status)
 

@@ -1,6 +1,6 @@
 [state]
-name = /hw/teste
+name = /hw/teste2
 msg_type = String
 dependencies = std_msgs.msg
 data = data
-insertion = update 
+insertion = add
