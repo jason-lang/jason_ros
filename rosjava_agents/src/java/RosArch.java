@@ -130,13 +130,8 @@ public class RosArch extends AgArch {
     ActionExec action = actionsWaiting.get(id);
 
     if (action != null) {
-        if (result) { //TODO: deixar só 1
-          action.setResult(true);
-          actionExecuted(action);
-        } else {
-          action.setResult(false);
-          actionExecuted(action);
-        }
+        action.setResult(result);
+        actionExecuted(action);
         actionsWaiting.remove(id);
     } else {
         System.out.println("Action not found.");
