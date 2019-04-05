@@ -84,7 +84,7 @@ public class RosArch extends AgArch {
 
         boolean bufUpdate = perception.getUpdate();
         if(bufUpdate){
-            Iterator<Literal> ibb = getTS().getAg().getBB().getCandidateBeliefs(new PredicateIndicator(perception.getPerceptionName(),perception.getParameters().size());
+            Iterator<Literal> ibb = getTS().getAg().getBB().getCandidateBeliefs(new PredicateIndicator(perception.getPerceptionName(),perception.getParameters().size()));
             boolean addBelief = true;
             while (ibb != null && ibb.hasNext()) {
                 Literal l = ibb.next();
