@@ -3,6 +3,7 @@ import jason.architecture.*;
 import jason.asSemantics.*;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.apache.commons.logging.Log;
 import org.ros.concurrent.CancellableLoop;
@@ -17,13 +18,13 @@ import org.ros.message.MessageListener;
 
 import jason_msgs.Action;
 import jason_msgs.ActionStatus;
+import jason_msgs.Perception;
 
 public class RosJasonNode extends AbstractNodeMain {
     NodeConfiguration nodeConfiguration = NodeConfiguration.newPrivate();
     Publisher<jason_msgs.Action> actionPub;
-    // Literal perception = null;
-    List<Literal> perception = new ArrayList<Literal>();
-    // Map<String, Literal> perception = new HashMap<String, Literal>();
+
+    ConcurrentLinkedQueue<jason_msgs.Perception> perceptionQueue = new ConcurrentLinkedQueue<jason_msgs.Perception>();
 
     List<jason_msgs.ActionStatus> actions_status = new ArrayList<jason_msgs.ActionStatus>();
     boolean connected;
@@ -38,20 +39,18 @@ public class RosJasonNode extends AbstractNodeMain {
     actionPub =
         connectedNode.newPublisher("/jason/actions", jason_msgs.Action._TYPE);
 
-    Subscriber<std_msgs.String> perceptsSub =
-        connectedNode.newSubscriber("/jason/percepts", std_msgs.String._TYPE);
+    Subscriber<jason_msgs.Perception> perceptsSub =
+        connectedNode.newSubscriber("/jason/percepts", jason_msgs.Perception._TYPE);
 
-    perceptsSub.addMessageListener(new MessageListener<std_msgs.String>() {
+    perceptsSub.addMessageListener(new MessageListener<jason_msgs.Perception>() {
       @Override
-      public void onNewMessage(std_msgs.String message) {
-         Literal new_perception = Literal.parseLiteral(message.getData());
-         perception.add(new_perception);
-        // perception.put(getPredicate(new_perception), new_perception);
+      public void onNewMessage(jason_msgs.Perception message) {
+        perceptionQueue.offer(message);
       }
     });
 
-		Subscriber<jason_msgs.ActionStatus> actionsStatusSub =
-		connectedNode.newSubscriber("/jason/actions_status", jason_msgs.ActionStatus._TYPE);
+	Subscriber<jason_msgs.ActionStatus> actionsStatusSub =
+	connectedNode.newSubscriber("/jason/actions_status", jason_msgs.ActionStatus._TYPE);
 
     actionsStatusSub.addMessageListener(new MessageListener<jason_msgs.ActionStatus>() {
       @Override
@@ -62,7 +61,7 @@ public class RosJasonNode extends AbstractNodeMain {
     this.connected = true;
   }
 
-  public  List<Literal> getPerception() { return perception; }
+  public jason_msgs.Perception getPerception() { return perceptionQueue.poll(); }
 
   public int publishAction(ActionExec action) {
     jason_msgs.Action act = actionPub.newMessage();
@@ -95,4 +94,5 @@ public class RosJasonNode extends AbstractNodeMain {
   }
 
   public boolean Connected() { return this.connected; }
+
 }

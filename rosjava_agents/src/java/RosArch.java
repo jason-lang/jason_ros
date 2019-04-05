@@ -1,11 +1,12 @@
 import jason.asSyntax.*;
 import jason.architecture.*;
 import jason.asSemantics.*;
+import static jason.asSyntax.ASSyntax.*;
+import jason.asSyntax.parser.ParseException;
+import jason.RevisionFailedException;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -20,6 +21,7 @@ import org.ros.node.NodeMain;
 import org.ros.node.NodeMainExecutor;
 
 import jason_msgs.ActionStatus;
+import jason_msgs.Perception;
 
 public class RosArch extends AgArch {
   RosJasonNode rosNode;
@@ -66,14 +68,30 @@ public class RosArch extends AgArch {
   }
 
   @Override
-  public List<Literal> perceive() {
-    List<Literal> per = new ArrayList<Literal>();
-    // Map<String, Literal> perception = rosNode.getPerception();
-    List<Literal> perception = rosNode.getPerception();
-    if (!perception.isEmpty()) {
-      per.addAll(perception);
+  public List<Literal> perceive(){
+    jason_msgs.Perception perception = rosNode.getPerception();
+    if (perception!=null) {
+        Literal bel = createLiteral(perception.getPerceptionName());
+
+        for(String param: perception.getParameters()){
+            try{
+                bel.addTerm(parseTerm(param));
+            }catch(ParseException e){
+                System.out.println("Error parsing perception parameters");
+            }
+        }
+        boolean update = perception.getUpdate();
+        if(update){
+            System.out.println("teste");
+        }else{
+            try{
+                getTS().getAg().addBel(bel);
+            }catch(RevisionFailedException e){
+                System.out.println("Error adding new belief");
+            }
+        }
     }
-    return per;
+    return null;
   }
 
   @Override
@@ -90,7 +108,7 @@ public class RosArch extends AgArch {
     ActionExec action = actionsWaiting.get(id);
 
     if (action != null) {
-        if (result) {
+        if (result) { //TODO: deixar só 1
           action.setResult(true);
           actionExecuted(action);
         } else {
