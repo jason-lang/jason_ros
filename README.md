@@ -102,5 +102,5 @@ This perception would be added into the agent belief base as state(data)
 
 For more examples of perceptions you can take a look at this [perceptions_manifest](https://github.com/Rezenders/MAS-UAV/blob/master/MiddleNode/perceptions_manifest)
 
-## More info
-Dockerhub: https://hub.docker.com/r/rezenders/jason-ros/
+## Examples
+A functional example using docker can be found at the repo [MAS-UAV](https://github.com/Rezenders/MAS-UAV)
