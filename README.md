@@ -35,6 +35,13 @@ Initialize roscore:
 $ roscore
 ```
 
+Before running HwBridge node jason_ws must be built and sourced:
+```
+$ cd jason_ws
+$ catkin_make
+$ source deve/setup.bash
+```
+
 HwBridge node:
 ```
 $ cd jason_ws/src/hw_bridge/src
@@ -45,6 +52,11 @@ Jason node:
 ```
 $ cd rosjava_agents
 $ gradle
+```
+
+In order to inspect what is being exchanged between the nodes you can use rostopic echo/info to inspect the topics /jason/actions, /jason/actions_status, /jason/percepts, /hw/teste or /hw/teste2:
+```
+$ rostopic echo /jason/actions      #or any other topic
 ```
 
 ### Running with Docker 
@@ -75,12 +87,22 @@ $ gradle
 
 Container 3:
 ```
-$ docker run -it --rm  --net ros_net  --name echo --env ROS_HOSTNAME=echo --env ROS_MASTER_URI=http://master:11311 jason-ros
+$ docker run -it --rm  --net ros_net  --name hwbridge --env ROS_HOSTNAME=hwbridge --env ROS_MASTER_URI=http://master:11311 jason-ros
 ```
 
 Then, at /jason_ws/src/hw_bridge/src folder:
 ```
 $ ./hw_bridge.py
+```
+
+
+In order to inspect what is being exchanged between the nodes you can use rostopic echo/info to inspect the topics /jason/actions, /jason/actions_status, /jason/percepts, /hw/teste or /hw/teste2:
+```
+$ docker run -it --rm  --net ros_net  --name echo --env ROS_HOSTNAME=echo --env ROS_MASTER_URI=http://master:11311 jason-ros 
+```
+Then:
+```
+$ rostopic echo /jason/actions      #or any other topic
 ```
 ## Customization
 
