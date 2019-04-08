@@ -16,6 +16,35 @@ armv7 version at branch [armv7](https://github.com/Rezenders/jason-ros/tree/armv
 
 
 ### Running Bare Metal
+
+#### Dependencies
+ros - this project was tested with ros melodic but it should work with different versions
+java 
+gradle
+
+#### Running
+Clone this repo:
+```
+$ git clone https://github.com/Rezenders/jason-ros.git
+```
+
+Initialize roscore:
+```
+$ roscore
+```
+
+HwBridge node:
+```
+$ cd jason_ws/src/hw_bridge/src
+$ ./hw_bridge.py
+```
+
+Jason node:
+```
+$ cd rosjava_agents
+$ gradle
+```
+
 ### Running with Docker 
 
 Build image
