@@ -19,7 +19,9 @@ armv7 version at branch [armv7](https://github.com/Rezenders/jason-ros/tree/armv
 
 #### Dependencies
 ros - this project was tested with ros melodic but it should work with different versions
+
 java 
+
 gradle
 
 #### Running
