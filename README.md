@@ -85,8 +85,8 @@ perception_manifest:
 name = /hw/teste2
 msg_type = String
 dependencies = std_msgs.msg
-data = data
-insertion = add
+args = data
+buf = add
 ```
 name - name of the topic or service 
 
@@ -94,9 +94,9 @@ msg_type - type of the message e.g. String, Bool, Int32
 
 dependencies - python module which contains the message type e.g. std_msgs.msg, mavros_msgs.msg
 
-data - fields that you want to perceive
+args - fields that you want to perceive
 
-insertion - if the perception should be added or updated in the belief base
+buf (belief update function) - if the perception should be added or updated in the belief base
 
 This perception would be added into the agent belief base as state(data)
 
