@@ -2,5 +2,5 @@
 name = /hw/teste2
 msg_type = String
 dependencies = std_msgs.msg
-data = data
-insertion = add
+args = data
+buf = add

@@ -16,9 +16,9 @@ class CommInfo:
         self.name = ""
         self.dependencies = ""
         self.module = None
-        self.data = []
+        self.args = []
         self.params_dict = OrderedDict()
-        self.insertion = ""
+        self.buf = ""
 
     def fill_data(self, name, reader):
         if reader.has_option(name, "method"):
@@ -30,9 +30,9 @@ class CommInfo:
         if reader.has_option(name, "dependencies"):
             self.dependencies = reader.get(name, "dependencies")
             self.module = importlib.import_module(self.dependencies)
-        if reader.has_option(name, "data"):
-            data_aux = reader.get(name, "data")
-            self.data = [y.split('.') for y in [x.strip() for x in data_aux.split(',')]]
+        if reader.has_option(name, "args"):
+            args_aux = reader.get(name, "args")
+            self.args = [y.split('.') for y in [x.strip() for x in args_aux.split(',')]]
         if reader.has_option(name, "params_name"):
             aux_name = reader.get(name, "params_name")
             if reader.has_option(name, "params_type"):
@@ -40,8 +40,8 @@ class CommInfo:
                 self.params_dict = OrderedDict((x.strip(),y.strip())  for x,y in itertools.izip(aux_name.split(','),aux_type.split(',')))
             else:
                 self.params_dict = OrderedDict((x.strip(),"str")  for x in aux_name.split(','))
-        if reader.has_option(name, "insertion"):
-            self.insertion = reader.get(name, "insertion")
+        if reader.has_option(name, "buf"):
+            self.buf = reader.get(name, "buf")
 
     def convert_params(self, params):
         converted = dict()
@@ -143,7 +143,7 @@ class PerceptionController(CommController):
 
     def subscriber_callback(self, msg, name):
         perception_param = []
-        for data in self.comm_dict[name].data:
+        for data in self.comm_dict[name].args:
             obj = msg
             for d in data:
                 if hasattr(obj, d):
@@ -155,7 +155,7 @@ class PerceptionController(CommController):
         perception = jason_msgs.msg.Perception()
         perception.perception_name = name
         perception.parameters = perception_param
-        if(self.comm_dict[name].insertion == "add"):
+        if(self.comm_dict[name].buf == "add"):
             perception.update = False
         else:
             perception.update = True
