@@ -48,15 +48,15 @@ $ cd jason_ws/src/hw_bridge/src
 $ ./hw_bridge.py
 ```
 
+In order to inspect what is being exchanged between the nodes you can use rostopic echo/info to inspect the topics /jason/actions, /jason/actions_status, /jason/percepts, /hw/teste or /hw/teste2:
+```
+$ rostopic echo /jason/actions      #or any other topic
+```
+
 Jason node:
 ```
 $ cd rosjava_agents
 $ gradle
-```
-
-In order to inspect what is being exchanged between the nodes you can use rostopic echo/info to inspect the topics /jason/actions, /jason/actions_status, /jason/percepts, /hw/teste or /hw/teste2:
-```
-$ rostopic echo /jason/actions      #or any other topic
 ```
 
 ### Running with Docker 
@@ -78,15 +78,6 @@ $ docker run -it --rm --net ros_net  --name master --env ROS_HOSTNAME=master --e
 
 Container 2:
 ```
-$ docker run -it --rm  --net ros_net  --name agent --env ROS_HOSTNAME=agent --env ROS_MASTER_URI=http://master:11311 jason-ros   
-```
-Inside container at the agent folder:
-```
-$ gradle
-```
-
-Container 3:
-```
 $ docker run -it --rm  --net ros_net  --name hwbridge --env ROS_HOSTNAME=hwbridge --env ROS_MASTER_URI=http://master:11311 jason-ros
 ```
 
@@ -95,6 +86,7 @@ Then, at /jason_ws/src/hw_bridge/src folder:
 $ ./hw_bridge.py
 ```
 
+Container 3:
 
 In order to inspect what is being exchanged between the nodes you can use rostopic echo/info to inspect the topics /jason/actions, /jason/actions_status, /jason/percepts, /hw/teste or /hw/teste2:
 ```
@@ -104,6 +96,16 @@ Then:
 ```
 $ rostopic echo /jason/actions      #or any other topic
 ```
+
+Container 4:
+```
+$ docker run -it --rm  --net ros_net  --name agent --env ROS_HOSTNAME=agent --env ROS_MASTER_URI=http://master:11311 jason-ros   
+```
+Inside container at the agent folder:
+```
+$ gradle
+```
+
 ## Customization
 
 In order to use this project, one must modify the [action_manifest](https://github.com/Rezenders/jason-ros/blob/master/jason_ws/src/hw_bridge/src/actions_manifest) and [perception_manifest](https://github.com/Rezenders/jason-ros/blob/master/jason_ws/src/hw_bridge/src/perceptions_manifest) to include the information about the actions being performed and the perceptions of interest. Also, one must include [RosArch](https://github.com/Rezenders/jason-ros/blob/master/rosjava_agents/src/java/RosArch.java), [RosJasonNode](https://github.com/Rezenders/jason-ros/blob/master/rosjava_agents/src/java/RosJasonNode.java) into the jason src/java/ directory, and [jason_msgs.jar](https://github.com/Rezenders/jason-ros/blob/master/rosjava_agents/lib/jason_msgs.jar) into the jason lib/ directory (this will be improved by generating one .jar that already contains all 3 dependencies).
