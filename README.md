@@ -39,7 +39,7 @@ Before running HwBridge node jason_ws must be built and sourced:
 ```
 $ cd jason_ws
 $ catkin_make
-$ source deve/setup.bash
+$ source devel/setup.bash
 ```
 
 HwBridge node:
