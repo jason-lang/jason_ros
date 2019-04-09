@@ -16,6 +16,49 @@ armv7 version at branch [armv7](https://github.com/Rezenders/jason-ros/tree/armv
 
 
 ### Running Bare Metal
+
+#### Dependencies
+ros - this project was tested with ros melodic but it should work with different versions
+
+java 
+
+gradle
+
+#### Running
+Clone this repo:
+```
+$ git clone https://github.com/Rezenders/jason-ros.git
+```
+
+Initialize roscore:
+```
+$ roscore
+```
+
+Before running HwBridge node jason_ws must be built and sourced:
+```
+$ cd jason_ws
+$ catkin_make
+$ source devel/setup.bash
+```
+
+HwBridge node:
+```
+$ cd jason_ws/src/hw_bridge/src
+$ ./hw_bridge.py
+```
+
+In order to inspect what is being exchanged between the nodes you can use rostopic echo/info to inspect the topics /jason/actions, /jason/actions_status, /jason/percepts, /hw/teste or /hw/teste2:
+```
+$ rostopic echo /jason/actions      #or any other topic
+```
+
+Jason node:
+```
+$ cd rosjava_agents
+$ gradle
+```
+
 ### Running with Docker 
 
 Build image
@@ -35,6 +78,27 @@ $ docker run -it --rm --net ros_net  --name master --env ROS_HOSTNAME=master --e
 
 Container 2:
 ```
+$ docker run -it --rm  --net ros_net  --name hwbridge --env ROS_HOSTNAME=hwbridge --env ROS_MASTER_URI=http://master:11311 jason-ros
+```
+
+Then, at /jason_ws/src/hw_bridge/src folder:
+```
+$ ./hw_bridge.py
+```
+
+Container 3:
+
+In order to inspect what is being exchanged between the nodes you can use rostopic echo/info to inspect the topics /jason/actions, /jason/actions_status, /jason/percepts, /hw/teste or /hw/teste2:
+```
+$ docker run -it --rm  --net ros_net  --name echo --env ROS_HOSTNAME=echo --env ROS_MASTER_URI=http://master:11311 jason-ros 
+```
+Then:
+```
+$ rostopic echo /jason/actions      #or any other topic
+```
+
+Container 4:
+```
 $ docker run -it --rm  --net ros_net  --name agent --env ROS_HOSTNAME=agent --env ROS_MASTER_URI=http://master:11311 jason-ros   
 ```
 Inside container at the agent folder:
@@ -42,15 +106,6 @@ Inside container at the agent folder:
 $ gradle
 ```
 
-Container 3:
-```
-$ docker run -it --rm  --net ros_net  --name echo --env ROS_HOSTNAME=echo --env ROS_MASTER_URI=http://master:11311 jason-ros
-```
-
-Then, at /jason_ws/src/hw_bridge/src folder:
-```
-$ ./hw_bridge.py
-```
 ## Customization
 
 In order to use this project, one must modify the [action_manifest](https://github.com/Rezenders/jason-ros/blob/master/jason_ws/src/hw_bridge/src/actions_manifest) and [perception_manifest](https://github.com/Rezenders/jason-ros/blob/master/jason_ws/src/hw_bridge/src/perceptions_manifest) to include the information about the actions being performed and the perceptions of interest. Also, one must include [RosArch](https://github.com/Rezenders/jason-ros/blob/master/rosjava_agents/src/java/RosArch.java), [RosJasonNode](https://github.com/Rezenders/jason-ros/blob/master/rosjava_agents/src/java/RosJasonNode.java) into the jason src/java/ directory, and [jason_msgs.jar](https://github.com/Rezenders/jason-ros/blob/master/rosjava_agents/lib/jason_msgs.jar) into the jason lib/ directory (this will be improved by generating one .jar that already contains all 3 dependencies).
@@ -85,8 +140,8 @@ perception_manifest:
 name = /hw/teste2
 msg_type = String
 dependencies = std_msgs.msg
-data = data
-insertion = add
+args = data
+buf = add
 ```
 name - name of the topic or service 
 
@@ -94,9 +149,9 @@ msg_type - type of the message e.g. String, Bool, Int32
 
 dependencies - python module which contains the message type e.g. std_msgs.msg, mavros_msgs.msg
 
-data - fields that you want to perceive
+args - fields that you want to perceive
 
-insertion - if the perception should be added or updated in the belief base
+buf (belief update function) - if the perception should be added or updated in the belief base
 
 This perception would be added into the agent belief base as state(data)
 
