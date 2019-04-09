@@ -71,14 +71,23 @@ public class RosArch extends AgArch {
   @Override
   public List<Literal> perceive(){
     jason_msgs.Perception perception = rosNode.getPerception();
-    if (perception!=null) {
+    while (perception!=null) {
         Literal bel = createLiteral(perception.getPerceptionName());
+        try{
+            bel.addAnnot(parseTerm("source[percept]"));
+        }catch(ParseException e){
+            System.out.println("Error parsing perception parameters");
+        }
 
         for(String param: perception.getParameters()){
             try{
-                bel.addTerm(parseTerm(param));
+                Term p = parseTerm(param);
+                if(p.isVar()){
+                    p = new StringTermImpl(param);
+                }
+                bel.addTerm(p);
             }catch(ParseException e){
-                System.out.println("Error parsing perception parameters");
+                bel.addTerm(new StringTermImpl(param));
             }
         }
 
@@ -112,6 +121,7 @@ public class RosArch extends AgArch {
                 System.out.println("Error adding new belief");
             }
         }
+        perception = rosNode.getPerception();
     }
     return null;
   }
