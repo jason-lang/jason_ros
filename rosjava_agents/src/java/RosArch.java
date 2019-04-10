@@ -4,6 +4,9 @@ import jason.asSemantics.*;
 import static jason.asSyntax.ASSyntax.*;
 import jason.asSyntax.parser.ParseException;
 import jason.RevisionFailedException;
+import jason.asSyntax.Trigger.TEOperator;
+import jason.asSyntax.Trigger.TEType;
+
 
 import java.util.List;
 import java.util.ArrayList;
@@ -72,12 +75,9 @@ public class RosArch extends AgArch {
   public List<Literal> perceive(){
     jason_msgs.Perception perception = rosNode.getPerception();
     while (perception!=null) {
+        TransitionSystem ts = getTS();
         Literal bel = createLiteral(perception.getPerceptionName());
-        try{
-            bel.addAnnot(parseTerm("source[percept]"));
-        }catch(ParseException e){
-            System.out.println("Error parsing perception parameters");
-        }
+        bel.addAnnot(ts.getAg().getBB().TPercept);
 
         for(String param: perception.getParameters()){
             try{
@@ -93,23 +93,34 @@ public class RosArch extends AgArch {
 
         boolean bufUpdate = perception.getUpdate();
         if(bufUpdate){
-            Iterator<Literal> ibb = getTS().getAg().getBB().getCandidateBeliefs(new PredicateIndicator(perception.getPerceptionName(),perception.getParameters().size()));
+            Iterator<Literal> ibb = ts.getAg().getBB().getCandidateBeliefs(new PredicateIndicator(perception.getPerceptionName(),perception.getParameters().size()));
             boolean addBelief = true;
             while (ibb != null && ibb.hasNext()) {
                 Literal l = ibb.next();
                 if(l.equals(bel)){
                     addBelief = false;
                 }else{
-                   try{
-                       getTS().getAg().delBel(l);
-                   }catch(RevisionFailedException e){
-                       System.out.println("Error adding new belief");
+                   // try{
+                   //     getTS().getAg().delBel(l);
+                   // }catch(RevisionFailedException e){
+                   //     System.out.println("Error adding new belief");
+                   // }
+                   ibb.remove(); // remove l as perception from BB
+
+                   // only produce -bel event if the agent has plans for the event
+                   Trigger te = new Trigger(TEOperator.del, TEType.belief, l);
+                   if (ts.getC().hasListener() || ts.getAg().getPL().hasCandidatePlan(te)) {
+                       l = ASSyntax.createLiteral(l.getFunctor(), l.getTermsArray());
+                       l.addAnnot(ts.getAg().getBB().TPercept);
+                       te.setLiteral(l);
+                       ts.getC().addEvent(new Event(te, Intention.EmptyInt));
                    }
+
                }
             }
             if(addBelief){
                 try{
-                    getTS().getAg().addBel(bel);
+                    ts.getAg().addBel(bel);
                 }catch(RevisionFailedException e){
                     System.out.println("Error adding new belief");
                 }
