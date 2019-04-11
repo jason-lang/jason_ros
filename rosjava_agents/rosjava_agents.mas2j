@@ -14,5 +14,5 @@ MAS rosjava_agents {
 
     infrastructure: Centralised
 
-    agents: sample_agent agentArchClass RosArch;
+    agents: sample_agent agentArchClass jasonros.RosArch;
 }

@@ -1,3 +1,5 @@
+package jasonros;
+
 import jason.asSyntax.*;
 import jason.architecture.*;
 import jason.asSemantics.*;
@@ -28,20 +30,20 @@ import jason_msgs.ActionStatus;
 import jason_msgs.Perception;
 
 public class RosArch extends AgArch {
-  RosJasonNode rosNode;
+  jasonros.RosJasonNode rosNode;
   Map<Integer, ActionExec> actionsWaiting = new HashMap<Integer, ActionExec>();
 
   @Override
   public void init() throws Exception {
     CommandLineLoader loader =
-        new CommandLineLoader(Lists.newArrayList("RosJasonNode"));
+        new CommandLineLoader(Lists.newArrayList("jasonros.RosJasonNode"));
     String nodeClassName = loader.getNodeClassName();
     System.out.println("Loading node class: " + loader.getNodeClassName());
     NodeConfiguration nodeConfiguration = loader.build();
     NodeMain nodeMain = null;
 
     try {
-      nodeMain = (RosJasonNode)loader.loadClass(nodeClassName);
+      nodeMain = (jasonros.RosJasonNode)loader.loadClass(nodeClassName);
     } catch (ClassNotFoundException e) {
       throw new RosRuntimeException("Unable to locate node: " + nodeClassName,
                                     e);
@@ -57,7 +59,7 @@ public class RosArch extends AgArch {
     NodeMainExecutor nodeMainExecutor = DefaultNodeMainExecutor.newDefault();
     nodeMainExecutor.execute(nodeMain, nodeConfiguration);
 
-    rosNode = (RosJasonNode)nodeMain;
+    rosNode = (jasonros.RosJasonNode)nodeMain;
     while (!rosNode.Connected())
       Thread.sleep(1000);
   }

@@ -1,3 +1,5 @@
+package jasonros;
+
 import jason.asSyntax.*;
 import jason.architecture.*;
 import jason.asSemantics.*;
