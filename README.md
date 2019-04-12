@@ -58,6 +58,7 @@ name = /hw/teste
 msg_type = String
 dependencies = std_msgs.msg
 params_name = data
+params_type = str
 ```
 method - topic or service
 
