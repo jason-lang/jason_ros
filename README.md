@@ -14,6 +14,87 @@ armv7 version at branch [armv7](https://github.com/Rezenders/jason-ros/tree/armv
 
 ## Usage
 
+### mas2j
+Use jasonros.RosArch
+
+```
+MAS rosbridge_agents {
+
+    infrastructure: Centralised
+
+    agents: sample_agent agentArchClass jasonros.RosArch;
+}
+```
+
+### Gradle
+Include jason, jasonros and jasonros_msgs to gradle:
+
+```
+repositories {
+   mavenCentral()
+   jcenter()
+   
+   maven { url "https://raw.github.com/rosjava/rosjava_mvn_repo/master" }
+   maven { url "https://raw.github.com/jason-lang/mvn-repo/master" }
+   maven { url "http://jacamo.sourceforge.net/maven2" }
+}
+
+dependencies {
+   compile group: 'org.jason-lang',     name: 'jason' ,   version: '2.4-SNAPSHOT'
+   compile group: 'org.jason-lang',     name: 'jasonros' ,   version: '1.0'
+   compile group: 'org.jason-lang',     name: 'jasonros_msgs' ,   version: '1.0'
+}
+```
+
+### Edit Manifests
+
+In order to use this project, one must modify the [action_manifest](https://github.com/Rezenders/jason-ros/blob/master/jason_ws/src/hw_bridge/src/actions_manifest) and [perception_manifest](https://github.com/Rezenders/jason-ros/blob/master/jason_ws/src/hw_bridge/src/perceptions_manifest) to include the information about the actions being performed and the perceptions of interest.
+
+action_manifest:
+```
+[teste]
+method = topic 
+name = /hw/teste
+msg_type = String
+dependencies = std_msgs.msg
+params_name = data
+```
+method - topic or service
+
+name - name of the topic or service 
+
+msg_type - type of the message e.g. String, Bool, Int32
+
+dependencies - python module which contains the message type e.g. std_msgs.msg, mavros_msgs.msg
+
+params_name - name of the parameter being sent
+
+params_type - type of the parameter e.g. bool, str, int
+
+For more examples of actions you can take a look at this [action_manifest](https://github.com/Rezenders/MAS-UAV/blob/master/MiddleNode/actions_manifest)
+
+perception_manifest:
+```
+[state]
+name = /hw/teste2
+msg_type = String
+dependencies = std_msgs.msg
+args = data
+buf = add
+```
+name - name of the topic or service 
+
+msg_type - type of the message e.g. String, Bool, Int32
+
+dependencies - python module which contains the message type e.g. std_msgs.msg, mavros_msgs.msg
+
+args - fields that you want to perceive
+
+buf (belief update function) - if the perception should be added or updated in the belief base
+
+This perception would be added into the agent belief base as state(data)
+
+For more examples of perceptions you can take a look at this [perceptions_manifest](https://github.com/Rezenders/MAS-UAV/blob/master/MiddleNode/perceptions_manifest)
 
 ### Running Bare Metal
 
@@ -105,57 +186,6 @@ Inside container at the agent folder:
 ```
 $ gradle
 ```
-
-## Customization
-
-In order to use this project, one must modify the [action_manifest](https://github.com/Rezenders/jason-ros/blob/master/jason_ws/src/hw_bridge/src/actions_manifest) and [perception_manifest](https://github.com/Rezenders/jason-ros/blob/master/jason_ws/src/hw_bridge/src/perceptions_manifest) to include the information about the actions being performed and the perceptions of interest. Also, one must include [RosArch](https://github.com/Rezenders/jason-ros/blob/master/rosjava_agents/src/java/RosArch.java), [RosJasonNode](https://github.com/Rezenders/jason-ros/blob/master/rosjava_agents/src/java/RosJasonNode.java) into the jason src/java/ directory, and [jason_msgs.jar](https://github.com/Rezenders/jason-ros/blob/master/rosjava_agents/lib/jason_msgs.jar) into the jason lib/ directory (this will be improved by generating one .jar that already contains all 3 dependencies).
-
-### Manifests Info
-action_manifest:
-```
-[teste]
-method = topic 
-name = /hw/teste
-msg_type = String
-dependencies = std_msgs.msg
-params_name = data
-```
-method - topic or service
-
-name - name of the topic or service 
-
-msg_type - type of the message e.g. String, Bool, Int32
-
-dependencies - python module which contains the message type e.g. std_msgs.msg, mavros_msgs.msg
-
-params_name - name of the parameter being sent
-
-params_type - type of the parameter e.g. bool, str, int
-
-For more examples of actions you can take a look at this [action_manifest](https://github.com/Rezenders/MAS-UAV/blob/master/MiddleNode/actions_manifest)
-
-perception_manifest:
-```
-[state]
-name = /hw/teste2
-msg_type = String
-dependencies = std_msgs.msg
-args = data
-buf = add
-```
-name - name of the topic or service 
-
-msg_type - type of the message e.g. String, Bool, Int32
-
-dependencies - python module which contains the message type e.g. std_msgs.msg, mavros_msgs.msg
-
-args - fields that you want to perceive
-
-buf (belief update function) - if the perception should be added or updated in the belief base
-
-This perception would be added into the agent belief base as state(data)
-
-For more examples of perceptions you can take a look at this [perceptions_manifest](https://github.com/Rezenders/MAS-UAV/blob/master/MiddleNode/perceptions_manifest)
 
 ## Examples
 A functional example using docker can be found at the repo [MAS-UAV](https://github.com/Rezenders/MAS-UAV)
