@@ -70,7 +70,7 @@ dependencies - python module which contains the message type e.g. std_msgs.msg, 
 
 params_name - name of the parameter being sent
 
-params_type - type of the parameter e.g. bool, str, int
+params_type - type of the parameter e.g. bool, str, int. If not inclued the default type is str
 
 For more examples of actions you can take a look at this [action_manifest](https://github.com/Rezenders/MAS-UAV/blob/master/MiddleNode/actions_manifest)
 
