@@ -78,11 +78,15 @@ artifacts {
 
 publishing {
     publications {
-        maven(MavenPublication) {
+        jasonros(MavenPublication) {
             from components.java
 			      artifact sourceJar
 			      artifact javadocJar
             artifactId 'jasonros'
+        }
+        jasonros_msgs(MavenPublication) {
+            artifact 'lib/jason_msgs.jar'
+            artifactId 'jasonros_msgs'
         }
     }
 }
@@ -90,6 +94,7 @@ publishing {
 task publishMavenGitHub(dependsOn: [ 'build', 'publishToMavenLocal']) {
   doLast {
     def wdir = System.getProperty("user.home")+'/.m2/repository/org/jason-lang/jasonros'
+    def wdir_msgs = System.getProperty("user.home")+'/.m2/repository/org/jason-lang/jasonros_msgs'
     def rdir = System.getProperty("user.home")+'/pro/jason-mvn-repo'
     exec {
         commandLine 'git', 'pull'
@@ -98,6 +103,10 @@ task publishMavenGitHub(dependsOn: [ 'build', 'publishToMavenLocal']) {
     copy {
         from wdir
         into rdir + '/org/jason-lang/jasonros'
+    }
+    copy {
+        from wdir_msgs
+        into rdir + '/org/jason-lang/jasonros_msgs'
     }
     exec {
         commandLine 'git', 'add', '*'
