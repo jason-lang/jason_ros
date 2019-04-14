@@ -9,6 +9,14 @@ import jason_msgs.msg
 from pathlib import Path
 from collections import OrderedDict
 
+def setattr_recursive(obj_list, attr_list, value):
+    aux = obj_list.pop()
+    setattr(aux, attr_list.pop(), value)
+    if len(obj_list) > 0:
+        return setattr_recursive(obj_list, attr_list, aux)
+    else:
+        return aux
+
 class CommInfo:
     def __init__(self):
         self.method = ""
@@ -44,11 +52,22 @@ class CommInfo:
             self.buf = reader.get(name, "buf")
 
     def convert_params(self, params):
-        converted = dict()
+        param_class = getattr(self.module, self.msg_type)
+        param_instance = param_class()
+
         for p,k in zip(params, self.params_dict):
-            converted[k]= getattr(__builtin__, self.params_dict[k])(p)
+            param_attr = k.split('.')
+            obj_list = [param_instance]
+            for attr in param_attr:
+                if hasattr(obj_list[-1], attr):
+                    if attr is not param_attr[-1]:
+                        obj_list.append(getattr(obj_list[-1], attr))
+                    else:
+                        value = getattr(__builtin__, self.params_dict[k])(p)
+                        converted = setattr_recursive(obj_list, param_attr, value)
 
         return converted
+
 
 class CommController:
     def __init__(self):
@@ -87,13 +106,13 @@ class ActionController(CommController):
         action_completed = False
         try:
             action = self.comm_dict[action_name]
-            converted_kw = action.convert_params(params)
+            converted_params = action.convert_params(params)
             msg_type = getattr(action.module, action.msg_type)
             if action.method == "service":
                 rospy.wait_for_service(action.name)
                 try:
                     service_aux = rospy.ServiceProxy(action.name, msg_type)
-                    service_aux(**converted_kw)
+                    service_aux(converted_params)
                 except rospy.ServiceException as e:
                     print("service "+ action.name +" call failed: %s." % e)
                 action_completed = True
@@ -105,12 +124,12 @@ class ActionController(CommController):
                     latch=True) #TODO:Verificar esse queue_size e latch se precisa ser esses
 
 
-                if hasattr(msg_type, "header"):
+                if hasattr(converted_params, "header"):
                     header = std_msgs.msg.Header()
                     header.stamp = rospy.Time.now()
-                    converted_kw['header'] = header
+                    setattr(converted_params, "header", header)
 
-                topic_pub.publish(**converted_kw)
+                topic_pub.publish(converted_params)
                 action_completed = True
             else:
                 print("method " + action.method + " not available.")
