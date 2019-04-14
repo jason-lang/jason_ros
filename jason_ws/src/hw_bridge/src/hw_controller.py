@@ -129,7 +129,7 @@ class ActionController(CommController):
                     action.name,
                     msg_type,
                     queue_size=1,
-                    latch=True) #TODO:Verificar esse queue_size e latch se precisa ser esses
+                    latch=False)
 
 
                 if hasattr(converted_params, "header"):
