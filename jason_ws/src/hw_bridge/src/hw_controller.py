@@ -141,14 +141,12 @@ class ActionController(CommController):
                 action_completed = True
             else:
                 print("method " + action.method + " not available.")
-                action_completed = True
+                action_completed = False
         except KeyError:
-            action_completed = True
+            action_completed = False
 
         return action_completed
 
-    def action_completed(self, action_name):
-        pass
 
 class PerceptionController(CommController):
     def __init__(self):
