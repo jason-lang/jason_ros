@@ -52,9 +52,17 @@ class CommInfo:
             self.buf = reader.get(name, "buf")
 
     def convert_params(self, params):
-        param_class = getattr(self.module, self.msg_type)
-        param_instance = param_class()
 
+        if self.method == "service":
+            msg_type = self.msg_type + "Request"
+        elif self.method == "topic":
+            msg_type = self.msg_type
+        else:
+            return None
+
+        param_class = getattr(self.module, msg_type)
+        param_instance = param_class()
+        converted = param_instance
         for p,k in zip(params, self.params_dict):
             param_attr = k.split('.')
             obj_list = [param_instance]
