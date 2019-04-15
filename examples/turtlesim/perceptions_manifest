@@ -1,0 +1,6 @@
+[pose]
+name = /turtle1/pose
+msg_type = Pose
+dependencies = turtlesim.msg
+args = x,y,theta
+buf = update
