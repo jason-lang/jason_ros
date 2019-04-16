@@ -124,6 +124,13 @@ $ catkin_make
 $ source devel/setup.bash
 ```
 
+If you don't want to source everytime you open a new bash, do something like:
+```
+echo "source ~/jason-ros/jason_ws/devel/setup.bash" >> ~/.bashrc
+source ~/.bashrc
+```
+Note: Change "~/jason-ros/jason_ws/devel/setup.bash" for the right path in your computer
+
 HwBridge node:
 ```
 $ cd jason_ws/src/hw_bridge/src
