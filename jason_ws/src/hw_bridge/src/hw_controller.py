@@ -129,7 +129,7 @@ class ActionController(CommController):
                     action.name,
                     msg_type,
                     queue_size=1,
-                    latch=False)
+                    latch=True)
 
 
                 if hasattr(converted_params, "header"):
