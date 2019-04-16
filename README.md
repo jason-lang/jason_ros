@@ -190,3 +190,4 @@ $ gradle
 
 ## Examples
 A functional example using docker can be found at the repo [MAS-UAV](https://github.com/Rezenders/MAS-UAV)
+For more examples check the example folder
