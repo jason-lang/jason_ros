@@ -5,3 +5,11 @@ msg_type = Twist
 dependencies = geometry_msgs.msg
 params_name = linear.x, linear.y, linear.z, angular.x, angular.y, angular.z
 params_type = float, float, float, float, float, float
+
+[set_pen]
+method = service
+name = /turtle1/set_pen
+msg_type = SetPen
+dependencies = turtlesim.srv
+params_name = r, g, b
+params_type = int, int, int
