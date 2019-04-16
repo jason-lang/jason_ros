@@ -39,6 +39,11 @@ Then, at this folder build this example image:
 $ docker build --tag jason-turtle .
 ```
 
+Create network:
+```
+$ docker network create ros_net
+```
+
 Then, run all the containers:
 
 Container 1:
