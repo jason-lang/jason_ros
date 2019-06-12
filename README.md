@@ -91,7 +91,7 @@ dependencies - python module which contains the message type e.g. std_msgs.msg, 
 
 args - fields that you want to perceive
 
-buf (belief update function) - if the perception should be added or updated in the belief base
+buf (belief update function) - if the perception should be added or updated in the belief base. If not inclued the default option is update
 
 This perception would be added into the agent belief base as state(data)
 
