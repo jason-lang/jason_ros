@@ -1,0 +1,18 @@
+/*
+    rosaria_agents
+    ---------------------------
+
+    Jason Project File
+
+    This file defines the initial state of the MAS
+
+    Jason 2.4
+    June 18, 2019 - 20:02:07
+*/
+
+MAS rosaria_agents {
+
+    infrastructure: Centralised
+
+    agents: rosaria_agent agentArchClass jasonros.RosArch;
+}

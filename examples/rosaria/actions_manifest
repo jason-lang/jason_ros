@@ -1,0 +1,7 @@
+[cmd_vel]
+method = topic
+name = /RosAria/cmd_vel
+msg_type = Twist
+dependencies = geometry_msgs.msg
+params_name = linear.x, linear.y, linear.z, angular.x, angular.y, angular.z
+params_type = float, float, float, float, float, float
