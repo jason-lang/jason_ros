@@ -1,9 +1,19 @@
 #!/usr/bin/env python2
 from hw_controller import *
 import rospy
-import re
+import argparse
 import std_msgs.msg
 import jason_msgs.msg
+
+def arg_parser():
+    parser = argparse.ArgumentParser(description="HardwareBridge node")
+
+    parser.add_argument("-a","--action", help="Action manifest path", nargs=1, type=str)
+    parser.add_argument("-p","--perception", help="Perception manifest path", nargs=1, type=str)
+
+    args = vars(parser.parse_args())
+
+    return args
 
 def act(msg, args):
     action_controller = args[0]
@@ -21,8 +31,13 @@ def main():
     print("Starting HwBridge node.")
     rospy.init_node('HwBridge')
 
+    args = arg_parser()
+
     action_controller = ActionController()
-    action_controller.read_manifest()
+    if args["action"] != None:
+        action_controller.read_manifest(args["action"][0])
+    else:
+        action_controller.read_manifest()
 
     jason_actions_status_pub = rospy.Publisher(
     '/jason/actions_status',
@@ -37,7 +52,11 @@ def main():
 
 
     perception_controller = PerceptionController()
-    perception_controller.read_manifest()
+    if args["perception"] != None:
+        perception_controller.read_manifest(args["perception"][0])
+    else:
+        perception_controller.read_manifest()
+
     perception_controller.start_perceiving()
 
     jason_percepts_pub = rospy.Publisher(

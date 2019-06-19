@@ -84,10 +84,12 @@ class CommController:
 
     def read_manifest(self, *args):
         reader = ConfigParser.RawConfigParser()
-        if len(args) == 0:
-            man_path = Path(self.default_path)
-        else:
+
+        if len(args) > 0 and Path(args[0]).is_file():
             man_path = Path(args[0])
+        else:
+            man_path = Path(self.default_path)
+
 
         if man_path.is_file():
             reader.read(str(man_path))
