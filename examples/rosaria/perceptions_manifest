@@ -1,3 +1,6 @@
+[DEFAULT]
+rate = 2
+
 [pose]
 name = /RosAria/pose
 msg_type = Odometry

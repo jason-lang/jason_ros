@@ -102,11 +102,6 @@ public class RosArch extends AgArch {
                 if(l.equals(bel)){
                     addBelief = false;
                 }else{
-                   // try{
-                   //     getTS().getAg().delBel(l);
-                   // }catch(RevisionFailedException e){
-                   //     System.out.println("Error adding new belief");
-                   // }
                    ibb.remove(); // remove l as perception from BB
 
                    // only produce -bel event if the agent has plans for the event

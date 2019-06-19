@@ -1,3 +1,6 @@
+[DEFAULT]
+rate = 1
+
 [state]
 name = /hw/teste2
 msg_type = String

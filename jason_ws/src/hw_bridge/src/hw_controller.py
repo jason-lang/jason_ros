@@ -154,6 +154,16 @@ class PerceptionController(CommController):
         self.default_path = "perceptions_manifest"
         self.subsciber_dict = dict()
         self.perceptions = dict()
+        self.rate = None
+
+    def get_info(self, reader):
+        default_section = reader.defaults()
+        try:
+            self.rate = float(default_section["rate"])
+        except KeyError:
+            self.rate = 1
+
+        CommController.get_info(self, reader)
 
     def start_perceiving(self):
         for comm in self.comm_dict.items():

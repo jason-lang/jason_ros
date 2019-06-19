@@ -20,7 +20,6 @@ def act(msg, args):
 def main():
     print("Starting HwBridge node.")
     rospy.init_node('HwBridge')
-    rate = rospy.Rate(1)
 
     action_controller = ActionController()
     action_controller.read_manifest()
@@ -47,6 +46,7 @@ def main():
     queue_size=1,
     latch=False)
 
+    rate = rospy.Rate(perception_controller.rate)
     while not rospy.is_shutdown():
         for p in perception_controller.perceptions.values():
             jason_percepts_pub.publish(p)
