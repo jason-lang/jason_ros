@@ -1,0 +1,20 @@
+[pose]
+name = /RosAria/pose
+msg_type = Odometry
+dependencies = nav_msgs.msg
+args = pose.pose.position.x, pose.pose.position.y, pose.pose.position.z, pose.pose.orientation.x,pose.pose.orientation.y, pose.pose.orientation.z, pose.pose.orientation.w
+buf = update
+
+[motors_state]
+name = /RosAria/motors_state
+msg_type = Bool
+dependencies = std_msgs.msg
+args = data
+buf = update
+
+[sonar]
+name = /RosAria/sonar
+msg_type = PointCloud
+dependencies = sensor_msgs.msg
+args = points
+buf = update

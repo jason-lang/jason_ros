@@ -5,3 +5,15 @@ msg_type = Twist
 dependencies = geometry_msgs.msg
 params_name = linear.x, linear.y, linear.z, angular.x, angular.y, angular.z
 params_type = float, float, float, float, float, float
+
+[enable_motors]
+method = service
+name = /RosAria/enable_motors
+msg_type = Empty
+dependencies = std_srvs.srv
+
+[disable_motors]
+method = service
+name = /RosAria/disable_motors
+msg_type = Empty
+dependencies = std_srvs.srv

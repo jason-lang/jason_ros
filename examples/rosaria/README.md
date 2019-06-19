@@ -33,7 +33,7 @@ $ docker run -it --rm --net ros_net --name mobilesim --env="DISPLAY" --env="QT_X
 
 Container 3:
 ```
-sudo  docker run -it --rm --net ros_net --name rosaria --env ROS_HOSTNAME=rosaria --env ROS_MASTER_URI=http://master:11311 jason-rosaria rosrun rosaria RosAria _port:=mobilesim:8101
+$ docker run -it --rm --net ros_net --name rosaria --env ROS_HOSTNAME=rosaria --env ROS_MASTER_URI=http://master:11311 jason-rosaria rosrun rosaria RosAria _port:=mobilesim:8101
 ```
 
 Container 4:
