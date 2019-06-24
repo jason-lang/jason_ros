@@ -10,6 +10,7 @@ def arg_parser():
 
     parser.add_argument("-a","--action", help="Action manifest path", nargs=1, type=str)
     parser.add_argument("-p","--perception", help="Perception manifest path", nargs=1, type=str)
+    parser.add_argument("-r","--param", help="Rosparam .yaml", nargs=1, type=str)
 
     args = vars(parser.parse_args())
 
@@ -32,6 +33,15 @@ def main():
     rospy.init_node('HwBridge')
 
     args = arg_parser()
+    if args["param"] != None:
+        import yaml
+        import rosparam
+        with open(args["param"][0], 'r') as stream:
+            try:
+                yaml_file = yaml.safe_load(stream)
+                rosparam.upload_params("/", yaml_file)
+            except yaml.YAMLError as exc:
+                print(exc)
 
     action_controller = ActionController()
     if args["action"] != None:

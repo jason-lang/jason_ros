@@ -90,7 +90,6 @@ class CommController:
         else:
             man_path = Path(self.default_path)
 
-
         if man_path.is_file():
             reader.read(str(man_path))
             self.get_info(reader)
@@ -132,7 +131,6 @@ class ActionController(CommController):
                     msg_type,
                     queue_size=1,
                     latch=True)
-
 
                 if hasattr(converted_params, "header"):
                     header = std_msgs.msg.Header()
