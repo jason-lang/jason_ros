@@ -9,6 +9,9 @@ import jason_msgs.msg
 from pathlib import Path
 from collections import OrderedDict
 
+def str2bool(v):
+  return v.lower() in ("yes", "true", "t", "1")
+
 def setattr_recursive(obj_list, attr_list, value):
     aux = obj_list.pop()
     setattr(aux, attr_list.pop(), value)
@@ -27,6 +30,7 @@ class CommInfo:
         self.args = []
         self.params_dict = OrderedDict()
         self.buf = ""
+        self.latch = "True"
 
     def fill_data(self, name, reader):
         if reader.has_option(name, "method"):
@@ -50,6 +54,8 @@ class CommInfo:
                 self.params_dict = OrderedDict((x.strip(),"str")  for x in aux_name.split(','))
         if reader.has_option(name, "buf"):
             self.buf = reader.get(name, "buf")
+        if reader.has_option(name, "latch"):
+            self.latch = reader.get(name, "latch")
 
     def convert_params(self, params):
 
@@ -126,11 +132,12 @@ class ActionController(CommController):
                     print("service "+ action.name +" call failed: %s." % e)
                 action_completed = True
             elif action.method == "topic":
+                latch = str2bool(action.latch)
                 topic_pub = rospy.Publisher(
                     action.name,
                     msg_type,
                     queue_size=1,
-                    latch=True)
+                    latch=latch)
 
                 if hasattr(converted_params, "header"):
                     header = std_msgs.msg.Header()
