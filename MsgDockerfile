@@ -36,4 +36,6 @@ RUN ["/bin/bash","-c","mkdir -p ~/rosjava/src && wstool init -j4 ~/rosjava/src h
 
 COPY jason_ws/ /jason_ws/
 
+RUN ["/bin/bash","-c", "source ~/rosjava/devel/setup.bash && cd /jason_ws/ && catkin_make && mkdir /artifacts"]
+
 CMD ["bash"]
