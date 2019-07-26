@@ -33,7 +33,7 @@ Include jason, jasonros and jasonros_msgs to gradle:
 repositories {
    mavenCentral()
    jcenter()
-   
+
    maven { url "https://raw.github.com/rosjava/rosjava_mvn_repo/master" }
    maven { url "https://raw.github.com/jason-lang/mvn-repo/master" }
    maven { url "http://jacamo.sourceforge.net/maven2" }
@@ -53,16 +53,17 @@ In order to use this project, one must modify the [action_manifest](https://gith
 action_manifest:
 ```
 [teste]
-method = topic 
+method = topic
 name = /hw/teste
 msg_type = String
 dependencies = std_msgs.msg
 params_name = data
 params_type = str
+latch = True
 ```
 method - topic or service
 
-name - name of the topic or service 
+name - name of the topic or service
 
 msg_type - type of the message e.g. String, Bool, Int32
 
@@ -71,6 +72,8 @@ dependencies - python module which contains the message type e.g. std_msgs.msg, 
 params_name - name of the parameter being sent
 
 params_type - type of the parameter e.g. bool, str, int. If not inclued the default type is str
+
+latch - if the action should be latched e.g. true, True, yes, 1, False, false. If not included the default is true
 
 For more examples of actions you can take a look at this [action_manifest](https://github.com/Rezenders/MAS-UAV/blob/master/MiddleNode/actions_manifest)
 
@@ -83,7 +86,7 @@ dependencies = std_msgs.msg
 args = data
 buf = add
 ```
-name - name of the topic or service 
+name - name of the topic or service
 
 msg_type - type of the message e.g. String, Bool, Int32
 
@@ -102,7 +105,7 @@ For more examples of perceptions you can take a look at this [perceptions_manife
 #### Dependencies
 ros - this project was tested with ros melodic but it should work with different versions
 
-java 
+java
 
 gradle
 
@@ -148,7 +151,7 @@ $ cd rosjava_agents
 $ gradle
 ```
 
-### Running with Docker 
+### Running with Docker
 
 Build image
 ```
@@ -179,7 +182,7 @@ Container 3:
 
 In order to inspect what is being exchanged between the nodes you can use rostopic echo/info to inspect the topics /jason/actions, /jason/actions_status, /jason/percepts, /hw/teste or /hw/teste2:
 ```
-$ docker run -it --rm  --net ros_net  --name echo --env ROS_HOSTNAME=echo --env ROS_MASTER_URI=http://master:11311 jason-ros 
+$ docker run -it --rm  --net ros_net  --name echo --env ROS_HOSTNAME=echo --env ROS_MASTER_URI=http://master:11311 jason-ros
 ```
 Then:
 ```
