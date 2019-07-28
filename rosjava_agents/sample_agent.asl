@@ -10,4 +10,5 @@
 
 +!start : true <-
 	teste("oioioi",333.4);
-	.print("hello world.").
+	.print("hello world.");
+	.send("bob", tell, oi("oi")).

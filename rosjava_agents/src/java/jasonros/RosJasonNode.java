@@ -21,10 +21,12 @@ import org.ros.message.MessageListener;
 import jason_msgs.Action;
 import jason_msgs.ActionStatus;
 import jason_msgs.Perception;
+import jason_msgs.Message;
 
 public class RosJasonNode extends AbstractNodeMain {
     NodeConfiguration nodeConfiguration = NodeConfiguration.newPrivate();
     Publisher<jason_msgs.Action> actionPub;
+    Publisher<jason_msgs.Message> msgPub;
 
     ConcurrentLinkedQueue<jason_msgs.Perception> perceptionQueue = new ConcurrentLinkedQueue<jason_msgs.Perception>();
 
@@ -40,6 +42,8 @@ public class RosJasonNode extends AbstractNodeMain {
   public void onStart(final ConnectedNode connectedNode) {
     actionPub =
         connectedNode.newPublisher("/jason/actions", jason_msgs.Action._TYPE);
+
+    msgPub = connectedNode.newPublisher("/jason/send_msg", jason_msgs.Message._TYPE);
 
     Subscriber<jason_msgs.Perception> perceptsSub =
         connectedNode.newSubscriber("/jason/percepts", jason_msgs.Perception._TYPE);
@@ -87,6 +91,20 @@ public class RosJasonNode extends AbstractNodeMain {
 
     actionPub.publish(act);
     return header.getSeq();
+  }
+
+  public void publishMessage(jason.asSemantics.Message m){
+      jason_msgs.Message msg = msgPub.newMessage();
+
+      std_msgs.Header header = nodeConfiguration.getTopicMessageFactory().newFromType(std_msgs.Header._TYPE);
+      msg.setHeader(header);
+
+      msg.setReceiver(m.getReceiver());
+      msg.setSender(m.getSender());
+
+      msg.setData(m.getPropCont().toString());
+      msg.setItlforce(m.getIlForce());
+      msgPub.publish(msg);
   }
 
   public List<jason_msgs.ActionStatus> retrieveStatus() {

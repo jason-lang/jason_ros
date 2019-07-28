@@ -28,6 +28,7 @@ import org.ros.node.NodeMainExecutor;
 
 import jason_msgs.ActionStatus;
 import jason_msgs.Perception;
+import jason_msgs.Message;
 
 public class RosArch extends AgArch {
   jasonros.RosJasonNode rosNode;
@@ -155,5 +156,10 @@ public class RosArch extends AgArch {
         System.out.println("Action not found.");
     }
   }
+
+  @Override
+   public void sendMsg(jason.asSemantics.Message m){
+       rosNode.publishMessage(m);
+   }
 
 }
