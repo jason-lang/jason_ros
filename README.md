@@ -41,8 +41,8 @@ repositories {
 
 dependencies {
    compile group: 'org.jason-lang',     name: 'jason' ,   version: '2.4-SNAPSHOT'
-   compile group: 'org.jason-lang',     name: 'jasonros' ,   version: '1.0'
-   compile group: 'org.jason-lang',     name: 'jasonros_msgs' ,   version: '1.0'
+   compile group: 'org.jason-lang',     name: 'jasonros' ,   version: '1.1'
+   compile group: 'org.jason-lang',     name: 'jasonros_msgs' ,   version: '1.1'
 }
 ```
 
