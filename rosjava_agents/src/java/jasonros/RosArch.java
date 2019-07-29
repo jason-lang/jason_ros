@@ -9,7 +9,6 @@ import jason.RevisionFailedException;
 import jason.asSyntax.Trigger.TEOperator;
 import jason.asSyntax.Trigger.TEType;
 
-
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
@@ -162,4 +161,21 @@ public class RosArch extends AgArch {
        rosNode.publishMessage(m);
    }
 
+   @Override
+   public void checkMail(){
+       jason_msgs.Message rosmsg = rosNode.getMessage();
+       Circumstance C = getTS().getC();
+       while (rosmsg!=null) {
+           jason.asSemantics.Message im = new jason.asSemantics.Message();
+
+           im.setReceiver(rosmsg.getReceiver());
+           im.setSender(rosmsg.getSender());
+           im.setPropCont(createLiteral(rosmsg.getData()));
+           im.setIlForce(rosmsg.getItlforce());
+
+           C.addMsg(im);
+
+           rosmsg = rosNode.getMessage();
+       }
+   }
 }

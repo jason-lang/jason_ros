@@ -29,13 +29,14 @@ public class RosJasonNode extends AbstractNodeMain {
     Publisher<jason_msgs.Message> msgPub;
 
     ConcurrentLinkedQueue<jason_msgs.Perception> perceptionQueue = new ConcurrentLinkedQueue<jason_msgs.Perception>();
+    ConcurrentLinkedQueue<jason_msgs.Message> messageQueue = new ConcurrentLinkedQueue<jason_msgs.Message>();
 
     List<jason_msgs.ActionStatus> actions_status = new ArrayList<jason_msgs.ActionStatus>();
     boolean connected;
 
     @Override
     public GraphName getDefaultNodeName() {
-    return GraphName.of("jason/agent");
+        return GraphName.of("jason/agent");
     }
 
   @Override
@@ -64,10 +65,22 @@ public class RosJasonNode extends AbstractNodeMain {
         actions_status.add(message);
       }
     });
+
+	Subscriber<jason_msgs.Message> msgSub =
+	connectedNode.newSubscriber("/jason/receive_msg", jason_msgs.Message._TYPE);
+
+    msgSub.addMessageListener(new MessageListener<jason_msgs.Message>() {
+      @Override
+      public void onNewMessage(jason_msgs.Message message) {
+          messageQueue.offer(message);
+      }
+    });
+
     this.connected = true;
   }
 
   public jason_msgs.Perception getPerception() { return perceptionQueue.poll(); }
+  public jason_msgs.Message getMessage() { return messageQueue.poll(); }
 
   public int publishAction(ActionExec action) {
     jason_msgs.Action act = actionPub.newMessage();
