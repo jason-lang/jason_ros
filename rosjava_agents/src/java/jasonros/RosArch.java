@@ -167,10 +167,13 @@ public class RosArch extends AgArch {
 
             im.setReceiver(rosmsg.getReceiver());
             im.setSender(rosmsg.getSender());
-            im.setPropCont(createLiteral(rosmsg.getData()));
-            im.setIlForce(rosmsg.getItlforce());
-
-            C.addMsg(im);
+            try {
+                im.setPropCont(parseLiteral(rosmsg.getData()));
+                im.setIlForce(rosmsg.getItlforce());
+                C.addMsg(im);
+            } catch (ParseException e) {
+                System.out.println("No message added.");
+            }
 
             rosmsg = rosNode.getMessage();
         }
