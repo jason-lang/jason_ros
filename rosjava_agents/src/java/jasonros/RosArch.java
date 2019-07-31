@@ -163,13 +163,8 @@ public class RosArch extends AgArch {
         jason_msgs.Message rosmsg = rosNode.getMessage();
         Circumstance C = getTS().getC();
         while (rosmsg != null) {
-            jason.asSemantics.Message im = new jason.asSemantics.Message();
-
-            im.setReceiver(rosmsg.getReceiver());
-            im.setSender(rosmsg.getSender());
             try {
-                im.setPropCont(parseLiteral(rosmsg.getData()));
-                im.setIlForce(rosmsg.getItlforce());
+                jason.asSemantics.Message im = jason.asSemantics.Message.parseMsg(rosmsg.getData());
                 C.addMsg(im);
             } catch (ParseException e) {
                 System.out.println("No message added.");

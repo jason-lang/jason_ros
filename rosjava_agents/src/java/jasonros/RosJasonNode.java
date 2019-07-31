@@ -119,11 +119,8 @@ public class RosJasonNode extends AbstractNodeMain {
                 nodeConfiguration.getTopicMessageFactory().newFromType(std_msgs.Header._TYPE);
         msg.setHeader(header);
 
-        msg.setReceiver(m.getReceiver());
-        msg.setSender(m.getSender());
+        msg.setData(m.toString());
 
-        msg.setData(m.getPropCont().toString());
-        msg.setItlforce(m.getIlForce());
         msgPub.publish(msg);
     }
 
