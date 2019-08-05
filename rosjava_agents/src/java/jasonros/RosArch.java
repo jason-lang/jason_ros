@@ -159,6 +159,11 @@ public class RosArch extends AgArch {
     }
 
     @Override
+    public void broadcast(jason.asSemantics.Message m) {
+        rosNode.publishMessage(m);
+    }
+
+    @Override
     public void checkMail() {
         jason_msgs.Message rosmsg = rosNode.getMessage();
         Circumstance C = getTS().getC();
