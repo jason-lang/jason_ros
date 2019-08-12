@@ -77,8 +77,10 @@ def main():
 
     rate = rospy.Rate(perception_controller.rate)
     while not rospy.is_shutdown():
-        for p in perception_controller.perceptions.values():
-            jason_percepts_pub.publish(p)
+        for p in perception_controller.perceptions.items():
+            if p[1] != None:
+                jason_percepts_pub.publish(p[1])
+                perception_controller.perceptions[p[0]] = None
 
         rate.sleep()
     rospy.spin()

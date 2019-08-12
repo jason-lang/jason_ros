@@ -161,6 +161,7 @@ class PerceptionController(CommController):
         self.default_path = "perceptions_manifest"
         self.subsciber_dict = dict()
         self.perceptions = dict()
+        self.last_perceptions = dict()
         self.rate = None
 
     def get_info(self, reader):
@@ -202,4 +203,8 @@ class PerceptionController(CommController):
         else:
             perception.update = True
 
-        self.perceptions[name] = perception
+        if name in self.last_perceptions and self.last_perceptions[name] == perception:
+            self.perceptions[name] = None
+        else:
+            self.perceptions[name] = perception
+            self.last_perceptions[name] = perception
