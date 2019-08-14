@@ -8,6 +8,8 @@ import std_msgs.msg
 import jason_msgs.msg
 from pathlib import Path
 from collections import OrderedDict
+from threading import Event
+from threading import RLock
 
 def str2bool(v):
   return v.lower() in ("yes", "true", "t", "1")
@@ -163,6 +165,8 @@ class PerceptionController(CommController):
         self.perceptions = dict()
         self.last_perceptions = dict()
         self.rate = None
+        self.p_event = Event()
+        self.p_lock = RLock()
 
     def get_info(self, reader):
         default_section = reader.defaults()
@@ -203,8 +207,11 @@ class PerceptionController(CommController):
         else:
             perception.update = True
 
-        if name in self.last_perceptions and self.last_perceptions[name] == perception:
+        self.p_lock.acquire()
+        if name in self.last_perceptions and self.last_perceptions[name].parameters == perception.parameters:
             self.perceptions[name] = None
         else:
             self.perceptions[name] = perception
             self.last_perceptions[name] = perception
+        self.p_lock.release()
+        self.p_event.set()

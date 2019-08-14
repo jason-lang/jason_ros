@@ -75,14 +75,15 @@ def main():
     queue_size=1,
     latch=False)
 
-    rate = rospy.Rate(perception_controller.rate)
     while not rospy.is_shutdown():
+        perception_controller.p_lock.acquire()
         for p in perception_controller.perceptions.items():
             if p[1] != None:
                 jason_percepts_pub.publish(p[1])
                 perception_controller.perceptions[p[0]] = None
-
-        rate.sleep()
+        perception_controller.p_lock.release()
+        perception_controller.p_event.wait()
+        perception_controller.p_event.clear()
     rospy.spin()
 
 if __name__ == '__main__':
