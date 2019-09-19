@@ -8,7 +8,7 @@ Basically, the Jason agent publishes the action it wants to perform into the top
 
 In other hand, HwBridge node subscribes to '/jason/actions'  and using the information contained in the [action_manifest](https://github.com/Rezenders/jason-ros/blob/master/jason_ws/src/hw_bridge/src/actions_manifest) it translates the action received and sends it to the right topic/service, when the action is completed it publishes its status into '/jason/actions_status'  topic. Also, it publishes perceptions into '/jason/percepts'  topic according to what is defined in [perception_manifest](https://github.com/Rezenders/jason-ros/blob/master/jason_ws/src/hw_bridge/src/perceptions_manifest).
 
-Docker images containing this repo and needed environment can be found at [dockerhub](https://cloud.docker.com/u/rezenders/repository/docker/rezenders/jason-ros).
+Docker images containing this repo and needed environment can be found at [dockerhub](https://hub.docker.com/u/rezenders).
 
 armv7 version at branch [armv7](https://github.com/Rezenders/jason-ros/tree/armv7) (out of date)
 
