@@ -1,0 +1,58 @@
+version: "2"
+
+services:
+    master:
+        image: ros:melodic-ros-core
+        container_name: master
+        networks:
+            - ros_net
+        restart: on-failure
+        environment:
+            - "ROS_HOSTNAME=master"
+            - "ROS_MASTER_URI=http://master:11311"
+        command: roscore
+
+    rosaria:
+        image: rezenders/jason-rosaria:arm
+        container_name: rosaria
+        networks:
+            - ros_net
+        environment:
+            - "ROS_HOSTNAME=rosaria"
+            - "ROS_MASTER_URI=http://master:11311"
+        depends_on:
+            - master
+        restart: on-failure
+        ports:
+            - "8101:8101"
+        command: rosrun rosaria RosAria _port:=150.162.53.61:8101
+
+    hwbridge:
+        image: rezenders/jason-rosaria:arm
+        container_name: hwbridge
+        networks:
+            - ros_net
+        environment:
+            - "ROS_HOSTNAME=hwbridge"
+            - "ROS_MASTER_URI=http://master:11311"
+        depends_on:
+            - master
+            - rosaria
+        command: rosrun hw_bridge hw_bridge.py
+
+    jason:
+        image: rezenders/jason-rosaria:arm
+        container_name: jason
+        networks:
+            - ros_net
+        environment:
+            - "ROS_HOSTNAME=jason"
+            - "ROS_MASTER_URI=http://master:11311"
+        depends_on:
+            - master
+            - rosaria
+            - hwbridge
+        command: gradle
+
+networks:
+    ros_net:
