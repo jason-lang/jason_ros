@@ -213,5 +213,5 @@ class PerceptionController(CommController):
         else:
             self.perceptions[name] = perception
             self.last_perceptions[name] = perception
+            self.p_event.set()
         self.p_lock.release()
-        self.p_event.set()
