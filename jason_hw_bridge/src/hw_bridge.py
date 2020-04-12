@@ -76,6 +76,7 @@ def main():
     latch=False)
 
     signal.signal(signal.SIGINT, signal.SIG_DFL)
+    rate = rospy.Rate(perception_controller.rate)
     while not rospy.is_shutdown():
         perception_controller.p_lock.acquire()
         for p in perception_controller.perceptions.items():
@@ -85,6 +86,7 @@ def main():
         perception_controller.p_lock.release()
         perception_controller.p_event.wait()
         perception_controller.p_event.clear()
+        rate.sleep()
     rospy.spin()
 
 if __name__ == '__main__':

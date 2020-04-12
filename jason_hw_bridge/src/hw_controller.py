@@ -165,7 +165,6 @@ class PerceptionController(CommController):
         self.default_path = "perceptions_manifest"
         self.subsciber_dict = dict()
         self.perceptions = dict()
-        self.last_perceptions = dict()
         self.rate = None
         self.p_event = Event()
         self.p_lock = RLock()
@@ -175,8 +174,7 @@ class PerceptionController(CommController):
         try:
             self.rate = float(default_section["rate"])
         except KeyError:
-            self.rate = 1
-
+            self.rate = 30
         CommController.get_info(self, reader)
 
     def start_perceiving(self):
@@ -210,10 +208,6 @@ class PerceptionController(CommController):
             perception.update = True
 
         self.p_lock.acquire()
-        if name in self.last_perceptions and self.last_perceptions[name].parameters == perception.parameters:
-            self.perceptions[name] = None
-        else:
-            self.perceptions[name] = perception
-            self.last_perceptions[name] = perception
-            self.p_event.set()
+        self.perceptions[name] = perception
+        self.p_event.set()
         self.p_lock.release()
