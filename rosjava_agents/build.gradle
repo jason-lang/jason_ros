@@ -5,7 +5,7 @@ apply plugin: 'eclipse'
 apply plugin: 'maven'
 apply plugin: 'maven-publish'
 
-version '1.4'
+version '1.5'
 group   'org.jason-lang'
 
 sourceCompatibility = 1.8
@@ -95,7 +95,7 @@ task publishMavenGitHub(dependsOn: [ 'build', 'publishToMavenLocal']) {
   doLast {
     def wdir = System.getProperty("user.home")+'/.m2/repository/org/jason-lang/jasonros'
     def wdir_msgs = System.getProperty("user.home")+'/.m2/repository/org/jason-lang/jasonros_msgs'
-    def rdir = System.getProperty("user.home")+'/pro/jason-mvn-repo'
+    def rdir = System.getProperty("user.home")+'/pro/mvn-repo'
     exec {
         commandLine 'git', 'pull'
         workingDir rdir
