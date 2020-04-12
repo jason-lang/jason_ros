@@ -49,14 +49,15 @@ def main():
     else:
         action_controller.read_manifest()
 
+    node_namespace = rospy.get_namespace()
     jason_actions_status_pub = rospy.Publisher(
-    '/jason/actions_status',
+    node_namespace+ 'jason/actions_status',
     jason_msgs.msg.ActionStatus,
     queue_size=1,
     latch=False)
 
     jason_action_sub = rospy.Subscriber(
-        '/jason/actions',
+        node_namespace + 'jason/actions',
         jason_msgs.msg.Action,
         act, (action_controller,jason_actions_status_pub))
 
@@ -70,7 +71,7 @@ def main():
     perception_controller.start_perceiving()
 
     jason_percepts_pub = rospy.Publisher(
-    '/jason/percepts',
+    node_namespace + 'jason/percepts',
     jason_msgs.msg.Perception,
     queue_size=(2*perception_controller.comm_len),
     latch=False)

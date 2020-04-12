@@ -43,12 +43,14 @@ public class RosJasonNode extends AbstractNodeMain {
 
     @Override
     public void onStart(final ConnectedNode connectedNode) {
-        actionPub = connectedNode.newPublisher("/jason/actions", jason_msgs.Action._TYPE);
+        String namespace = connectedNode.getResolver().getNamespace().toString();
 
-        msgPub = connectedNode.newPublisher("/jason/send_msg", jason_msgs.Message._TYPE);
+        actionPub = connectedNode.newPublisher(namespace+"/jason/actions", jason_msgs.Action._TYPE);
+
+        msgPub = connectedNode.newPublisher(namespace+"/jason/send_msg", jason_msgs.Message._TYPE);
 
         Subscriber<jason_msgs.Perception> perceptsSub =
-                connectedNode.newSubscriber("/jason/percepts", jason_msgs.Perception._TYPE);
+                connectedNode.newSubscriber(namespace+"/jason/percepts", jason_msgs.Perception._TYPE);
 
         perceptsSub.addMessageListener(new MessageListener<jason_msgs.Perception>() {
             @Override
@@ -58,7 +60,7 @@ public class RosJasonNode extends AbstractNodeMain {
         });
 
         Subscriber<jason_msgs.ActionStatus> actionsStatusSub =
-                connectedNode.newSubscriber("/jason/actions_status", jason_msgs.ActionStatus._TYPE);
+                connectedNode.newSubscriber(namespace+"/jason/actions_status", jason_msgs.ActionStatus._TYPE);
 
         actionsStatusSub.addMessageListener(new MessageListener<jason_msgs.ActionStatus>() {
             @Override
@@ -68,7 +70,7 @@ public class RosJasonNode extends AbstractNodeMain {
         });
 
         Subscriber<jason_msgs.Message> msgSub =
-                connectedNode.newSubscriber("/jason/receive_msg", jason_msgs.Message._TYPE);
+                connectedNode.newSubscriber(namespace+"/jason/receive_msg", jason_msgs.Message._TYPE);
 
         msgSub.addMessageListener(new MessageListener<jason_msgs.Message>() {
             @Override
