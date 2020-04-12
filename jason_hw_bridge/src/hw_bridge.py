@@ -4,6 +4,8 @@ import rospy
 import argparse
 import std_msgs.msg
 import jason_msgs.msg
+import signal
+
 
 def arg_parser():
     parser = argparse.ArgumentParser(description="HardwareBridge node")
@@ -75,6 +77,7 @@ def main():
     queue_size=1,
     latch=False)
 
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
     while not rospy.is_shutdown():
         perception_controller.p_lock.acquire()
         for p in perception_controller.perceptions.items():
