@@ -13,13 +13,16 @@
   <license>GPLv3</license>
 
   <buildtool_depend>catkin</buildtool_depend>
-  <build_depend>jason_msgs</build_depend>
+
   <build_depend>rospy</build_depend>
-  <build_export_depend>jason_msgs</build_export_depend>
   <build_export_depend>rospy</build_export_depend>
-  <exec_depend>jason_msgs</exec_depend>
   <exec_depend>rospy</exec_depend>
 
+  <build_depend>jason_msgs</build_depend>
+  <build_export_depend>jason_msgs</build_export_depend>
+  <exec_depend>jason_msgs</exec_depend>
+
+  <exec_depend>python-pathlib</exec_depend>
 
   <export>
   </export>
