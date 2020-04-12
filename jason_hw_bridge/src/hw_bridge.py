@@ -6,7 +6,6 @@ import std_msgs.msg
 import jason_msgs.msg
 import signal
 
-
 def arg_parser():
     parser = argparse.ArgumentParser(description="HardwareBridge node")
 
@@ -73,7 +72,7 @@ def main():
     jason_percepts_pub = rospy.Publisher(
     '/jason/percepts',
     jason_msgs.msg.Perception,
-    queue_size=1,
+    queue_size=(2*perception_controller.comm_len),
     latch=False)
 
     signal.signal(signal.SIGINT, signal.SIG_DFL)

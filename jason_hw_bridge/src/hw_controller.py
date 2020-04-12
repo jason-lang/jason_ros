@@ -89,6 +89,7 @@ class CommController:
     def __init__(self):
         self.comm_dict = dict()
         self.default_path = ""
+        self.comm_len = 0
 
     def read_manifest(self, *args):
         reader = ConfigParser.RawConfigParser()
@@ -105,6 +106,7 @@ class CommController:
 
     def get_info(self, reader):
         comm_list = reader.sections()
+        self.comm_len = len(comm_list)
         for comm in comm_list:
             comm_info = CommInfo()
             comm_info.fill_data(comm, reader)
