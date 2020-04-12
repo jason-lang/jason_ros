@@ -1,3 +1,3 @@
 #!/bin/bash
 
-gradle $1
+gradle -b $1
