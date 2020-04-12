@@ -14,9 +14,8 @@ def arg_parser():
     parser.add_argument("-p","--perception", help="Perception manifest path", nargs=1, type=str)
     parser.add_argument("-r","--param", help="Rosparam .yaml", nargs=1, type=str)
 
-    args = vars(parser.parse_args())
-
-    return args
+    args, unknown = parser.parse_known_args()
+    return vars(args)
 
 def act(msg, args):
     action_controller = args[0]
