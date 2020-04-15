@@ -34,12 +34,12 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /
 RUN ["/bin/bash","-c","mkdir -p ~/rosjava/src && wstool init -j4 ~/rosjava/src https://raw.githubusercontent.com/rosjava/rosjava/kinetic/rosjava.rosinstall && source /opt/ros/kinetic/setup.bash && cd ~/rosjava/ && rosdep update && rosdep install --from-paths src -i -y && catkin_make"]
 
-RUN [ "/bin/bash","-c","source /opt/ros/melodic/setup.bash && \
+RUN [ "/bin/bash","-c","source /opt/ros/kinetic/setup.bash && \
         mkdir -p /jason_ros_ws/src && \
         cd /jason_ros_ws/src && catkin_init_workspace"]
 
-COPY hw_bridge/ /jason_ros_ws/src
-COPY jason_msgs/ /jason_ros_ws/src
+COPY jason_ros/ /jason_ros_ws/src/jason_ros/jason_ros/
+COPY jason_ros_msgs/ /jason_ros_ws/src/jason_ros/jason_ros_msgs/
 
 RUN ["/bin/bash","-c", "source ~/rosjava/devel/setup.bash && cd /jason_ros_ws/ && catkin_make && mkdir /artifacts"]
 
