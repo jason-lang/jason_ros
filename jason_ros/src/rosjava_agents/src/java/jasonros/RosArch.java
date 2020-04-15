@@ -58,6 +58,7 @@ public class RosArch extends AgArch {
 
         rosNode = (jasonros.RosJasonNode) nodeMain;
         while (!rosNode.Connected()) Thread.sleep(1000);
+        rosNode.setNameParameter(this.getAgName());
     }
 
     @Override

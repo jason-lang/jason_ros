@@ -10,6 +10,7 @@ import org.ros.node.NodeConfiguration;
 import org.ros.node.NodeMain;
 import org.ros.node.topic.Publisher;
 import org.ros.node.topic.Subscriber;
+import org.ros.node.parameter.ParameterTree;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +26,8 @@ import jason_ros_msgs.Perception;
 
 public class RosJasonNode extends AbstractNodeMain {
     NodeConfiguration nodeConfiguration = NodeConfiguration.newPrivate();
+    ParameterTree parameterTree;
+    String namespace = "";
     Publisher<jason_ros_msgs.Action> actionPub;
     Publisher<jason_ros_msgs.Message> msgPub;
 
@@ -43,7 +46,8 @@ public class RosJasonNode extends AbstractNodeMain {
 
     @Override
     public void onStart(final ConnectedNode connectedNode) {
-        String namespace = "";
+        parameterTree = connectedNode.getParameterTree();
+
         if(!connectedNode.getResolver().getNamespace().isRoot()){
           namespace = connectedNode.getResolver().getNamespace().toString();
         }
@@ -137,5 +141,9 @@ public class RosJasonNode extends AbstractNodeMain {
 
     public boolean Connected() {
         return this.connected;
+    }
+
+    public void setNameParameter(String agent_name){
+      parameterTree.set(namespace + "/jason/agent_name", agent_name);
     }
 }
