@@ -205,8 +205,9 @@ $ docker build -t jason-msg . -f MsgDockerfile
 ```
 
 ```
-$ docker run -it --rm -v ${PWD}/rosjava_agents/lib/:/artifacts jason-msg cp /jason_ros_ws/build/jason_msgs/java/jason_msgs/build/libs/jason_msgs-0.0.0.jar /artifacts/jason_msgs.jar
+$ docker run -it --rm -v ${PWD}/jason_ros/src/rosjava_agents/lib/:/artifacts jason_ros_msgs cp /jason_ros_ws/build/jason_ros/jason_ros_msgs/java/jason_ros_msgs/build/libs/jason_ros_msgs-1.6.0.jar /artifacts/jason_ros_msgs.jar
 ```
+
 ## Examples
 A functional example using docker can be found at the repo [MAS-UAV](https://github.com/Rezenders/MAS-UAV)
 For more examples check the example folder
