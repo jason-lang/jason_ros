@@ -198,7 +198,7 @@ Inside container at the agent folder:
 $ gradle
 ```
 ## Developers Note
-In order to generate jason_msgs.jar run:
+In order to generate jason_ros_msgs.jar run:
 
 ```
 $ docker build -t jason-msg . -f MsgDockerfile
@@ -207,6 +207,7 @@ $ docker build -t jason-msg . -f MsgDockerfile
 ```
 $ docker run -it --rm -v ${PWD}/jason_ros/src/rosjava_agents/lib/:/artifacts jason_ros_msgs cp /jason_ros_ws/build/jason_ros/jason_ros_msgs/java/jason_ros_msgs/build/libs/jason_ros_msgs-1.6.0.jar /artifacts/jason_ros_msgs.jar
 ```
+Note: Use the correct version according to jason_ros_msgs/package.xml
 
 ## Examples
 A functional example using docker can be found at the repo [MAS-UAV](https://github.com/Rezenders/MAS-UAV)
