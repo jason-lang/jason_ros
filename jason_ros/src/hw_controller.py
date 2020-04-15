@@ -5,7 +5,7 @@ import itertools
 import rospy
 import __builtin__
 import std_msgs.msg
-import jason_msgs.msg
+import jason_ros_msgs.msg
 from pathlib import Path
 from collections import OrderedDict
 from threading import Event
@@ -201,7 +201,7 @@ class PerceptionController(CommController):
                         perception_param.append(obj)
         perception_param = map(str, perception_param)
 
-        perception = jason_msgs.msg.Perception()
+        perception = jason_ros_msgs.msg.Perception()
         perception.perception_name = name
         perception.parameters = perception_param
         if(self.comm_dict[name].buf == "add"):

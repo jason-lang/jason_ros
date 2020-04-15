@@ -5,7 +5,7 @@ apply plugin: 'eclipse'
 apply plugin: 'maven'
 apply plugin: 'maven-publish'
 
-version '1.5'
+version '1.6'
 group   'org.jason-lang'
 
 sourceCompatibility = 1.8
@@ -25,11 +25,11 @@ repositories {
 }
 
 dependencies {
-    compile group: 'org.jason-lang',     name: 'jason' ,   version: '2.4-SNAPSHOT'
+    compile group: 'org.jason-lang',     name: 'jason' ,   version: '2.5-SNAPSHOT'
     compile 'org.ros.rosjava_core:rosjava:[0.3,0.4)'
     compile 'org.ros.rosjava_messages:std_msgs:[0.5,0.6)'
     compile 'org.ros.rosjava_bootstrap:message_generation:[0.3,0.4)'
-    compile files('lib/jason_msgs.jar') //(name:'jason_msgs', ext:'jar')
+    compile files('lib/jason_ros_msgs.jar') //(name:'jason_ros_msgs', ext:'jar')
 
     compile 'com.google.guava:guava:12.0'
     compile 'org.apache.commons:com.springsource.org.apache.commons.logging:1.1.1'
@@ -85,7 +85,7 @@ publishing {
             artifactId 'jasonros'
         }
         jasonros_msgs(MavenPublication) {
-            artifact 'lib/jason_msgs.jar'
+            artifact 'lib/jason_ros_msgs.jar'
             artifactId 'jasonros_msgs'
         }
     }

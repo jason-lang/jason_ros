@@ -3,7 +3,7 @@ from hw_controller import *
 import rospy
 import argparse
 import std_msgs.msg
-import jason_msgs.msg
+import jason_ros_msgs.msg
 import signal
 
 def arg_parser():
@@ -20,7 +20,7 @@ def act(msg, args):
     action_controller = args[0]
     pub = args[1]
 
-    action_status = jason_msgs.msg.ActionStatus()
+    action_status = jason_ros_msgs.msg.ActionStatus()
     action_status.id = msg.header.seq
 
     action_status.result = action_controller.perform_action(msg.action_name, msg.parameters)
@@ -52,13 +52,13 @@ def main():
     node_namespace = rospy.get_namespace()
     jason_actions_status_pub = rospy.Publisher(
     node_namespace+ 'jason/actions_status',
-    jason_msgs.msg.ActionStatus,
+    jason_ros_msgs.msg.ActionStatus,
     queue_size=1,
     latch=False)
 
     jason_action_sub = rospy.Subscriber(
         node_namespace + 'jason/actions',
-        jason_msgs.msg.Action,
+        jason_ros_msgs.msg.Action,
         act, (action_controller,jason_actions_status_pub))
 
 
@@ -72,7 +72,7 @@ def main():
 
     jason_percepts_pub = rospy.Publisher(
     node_namespace + 'jason/percepts',
-    jason_msgs.msg.Perception,
+    jason_ros_msgs.msg.Perception,
     queue_size=(2*perception_controller.comm_len),
     latch=False)
 

@@ -25,9 +25,9 @@ import jason.asSyntax.*;
 import jason.asSyntax.Trigger.TEOperator;
 import jason.asSyntax.Trigger.TEType;
 import jason.asSyntax.parser.ParseException;
-import jason_msgs.ActionStatus;
-import jason_msgs.Message;
-import jason_msgs.Perception;
+import jason_ros_msgs.ActionStatus;
+import jason_ros_msgs.Message;
+import jason_ros_msgs.Perception;
 
 public class RosArch extends AgArch {
     jasonros.RosJasonNode rosNode;
@@ -62,8 +62,8 @@ public class RosArch extends AgArch {
 
     @Override
     public void reasoningCycleStarting() {
-        List<jason_msgs.ActionStatus> actions_status = rosNode.retrieveStatus();
-        for (jason_msgs.ActionStatus status : actions_status) {
+        List<jason_ros_msgs.ActionStatus> actions_status = rosNode.retrieveStatus();
+        for (jason_ros_msgs.ActionStatus status : actions_status) {
             actionsStatus(status);
         }
         super.reasoningCycleStarting();
@@ -71,7 +71,7 @@ public class RosArch extends AgArch {
 
     @Override
     public List<Literal> perceive() {
-        jason_msgs.Perception perception = rosNode.getPerception();
+        jason_ros_msgs.Perception perception = rosNode.getPerception();
         while (perception != null) {
             TransitionSystem ts = getTS();
             Literal bel = createLiteral(perception.getPerceptionName());
@@ -138,7 +138,7 @@ public class RosArch extends AgArch {
         actionsWaiting.put(seq, action);
     }
 
-    public void actionsStatus(jason_msgs.ActionStatus data) {
+    public void actionsStatus(jason_ros_msgs.ActionStatus data) {
         int id = data.getId();
         boolean result = data.getResult();
 
@@ -165,7 +165,7 @@ public class RosArch extends AgArch {
 
     @Override
     public void checkMail() {
-        jason_msgs.Message rosmsg = rosNode.getMessage();
+        jason_ros_msgs.Message rosmsg = rosNode.getMessage();
         Circumstance C = getTS().getC();
         while (rosmsg != null) {
             try {

@@ -18,22 +18,22 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import jason.architecture.*;
 import jason.asSemantics.*;
 import jason.asSyntax.*;
-import jason_msgs.Action;
-import jason_msgs.ActionStatus;
-import jason_msgs.Message;
-import jason_msgs.Perception;
+import jason_ros_msgs.Action;
+import jason_ros_msgs.ActionStatus;
+import jason_ros_msgs.Message;
+import jason_ros_msgs.Perception;
 
 public class RosJasonNode extends AbstractNodeMain {
     NodeConfiguration nodeConfiguration = NodeConfiguration.newPrivate();
-    Publisher<jason_msgs.Action> actionPub;
-    Publisher<jason_msgs.Message> msgPub;
+    Publisher<jason_ros_msgs.Action> actionPub;
+    Publisher<jason_ros_msgs.Message> msgPub;
 
-    ConcurrentLinkedQueue<jason_msgs.Perception> perceptionQueue =
-            new ConcurrentLinkedQueue<jason_msgs.Perception>();
-    ConcurrentLinkedQueue<jason_msgs.Message> messageQueue =
-            new ConcurrentLinkedQueue<jason_msgs.Message>();
+    ConcurrentLinkedQueue<jason_ros_msgs.Perception> perceptionQueue =
+            new ConcurrentLinkedQueue<jason_ros_msgs.Perception>();
+    ConcurrentLinkedQueue<jason_ros_msgs.Message> messageQueue =
+            new ConcurrentLinkedQueue<jason_ros_msgs.Message>();
 
-    List<jason_msgs.ActionStatus> actions_status = new ArrayList<jason_msgs.ActionStatus>();
+    List<jason_ros_msgs.ActionStatus> actions_status = new ArrayList<jason_ros_msgs.ActionStatus>();
     boolean connected;
 
     @Override
@@ -43,38 +43,41 @@ public class RosJasonNode extends AbstractNodeMain {
 
     @Override
     public void onStart(final ConnectedNode connectedNode) {
-        String namespace = connectedNode.getResolver().getNamespace().toString();
+        String namespace = "";
+        if(!connectedNode.getResolver().getNamespace().isRoot()){
+          namespace = connectedNode.getResolver().getNamespace().toString();
+        }
 
-        actionPub = connectedNode.newPublisher(namespace+"/jason/actions", jason_msgs.Action._TYPE);
+        actionPub = connectedNode.newPublisher(namespace+"/jason/actions", jason_ros_msgs.Action._TYPE);
 
-        msgPub = connectedNode.newPublisher(namespace+"/jason/send_msg", jason_msgs.Message._TYPE);
+        msgPub = connectedNode.newPublisher(namespace+"/jason/send_msg", jason_ros_msgs.Message._TYPE);
 
-        Subscriber<jason_msgs.Perception> perceptsSub =
-                connectedNode.newSubscriber(namespace+"/jason/percepts", jason_msgs.Perception._TYPE);
+        Subscriber<jason_ros_msgs.Perception> perceptsSub =
+                connectedNode.newSubscriber(namespace+"/jason/percepts", jason_ros_msgs.Perception._TYPE);
 
-        perceptsSub.addMessageListener(new MessageListener<jason_msgs.Perception>() {
+        perceptsSub.addMessageListener(new MessageListener<jason_ros_msgs.Perception>() {
             @Override
-            public void onNewMessage(jason_msgs.Perception message) {
+            public void onNewMessage(jason_ros_msgs.Perception message) {
                 perceptionQueue.offer(message);
             }
         });
 
-        Subscriber<jason_msgs.ActionStatus> actionsStatusSub =
-                connectedNode.newSubscriber(namespace+"/jason/actions_status", jason_msgs.ActionStatus._TYPE);
+        Subscriber<jason_ros_msgs.ActionStatus> actionsStatusSub =
+                connectedNode.newSubscriber(namespace+"/jason/actions_status", jason_ros_msgs.ActionStatus._TYPE);
 
-        actionsStatusSub.addMessageListener(new MessageListener<jason_msgs.ActionStatus>() {
+        actionsStatusSub.addMessageListener(new MessageListener<jason_ros_msgs.ActionStatus>() {
             @Override
-            public void onNewMessage(jason_msgs.ActionStatus message) {
+            public void onNewMessage(jason_ros_msgs.ActionStatus message) {
                 actions_status.add(message);
             }
         });
 
-        Subscriber<jason_msgs.Message> msgSub =
-                connectedNode.newSubscriber(namespace+"/jason/receive_msg", jason_msgs.Message._TYPE);
+        Subscriber<jason_ros_msgs.Message> msgSub =
+                connectedNode.newSubscriber(namespace+"/jason/receive_msg", jason_ros_msgs.Message._TYPE);
 
-        msgSub.addMessageListener(new MessageListener<jason_msgs.Message>() {
+        msgSub.addMessageListener(new MessageListener<jason_ros_msgs.Message>() {
             @Override
-            public void onNewMessage(jason_msgs.Message message) {
+            public void onNewMessage(jason_ros_msgs.Message message) {
                 messageQueue.offer(message);
             }
         });
@@ -82,15 +85,15 @@ public class RosJasonNode extends AbstractNodeMain {
         this.connected = true;
     }
 
-    public jason_msgs.Perception getPerception() {
+    public jason_ros_msgs.Perception getPerception() {
         return perceptionQueue.poll();
     }
-    public jason_msgs.Message getMessage() {
+    public jason_ros_msgs.Message getMessage() {
         return messageQueue.poll();
     }
 
     public int publishAction(ActionExec action) {
-        jason_msgs.Action act = actionPub.newMessage();
+        jason_ros_msgs.Action act = actionPub.newMessage();
 
         std_msgs.Header header =
                 nodeConfiguration.getTopicMessageFactory().newFromType(std_msgs.Header._TYPE);
@@ -115,7 +118,7 @@ public class RosJasonNode extends AbstractNodeMain {
     }
 
     public void publishMessage(jason.asSemantics.Message m) {
-        jason_msgs.Message msg = msgPub.newMessage();
+        jason_ros_msgs.Message msg = msgPub.newMessage();
 
         std_msgs.Header header =
                 nodeConfiguration.getTopicMessageFactory().newFromType(std_msgs.Header._TYPE);
@@ -126,8 +129,8 @@ public class RosJasonNode extends AbstractNodeMain {
         msgPub.publish(msg);
     }
 
-    public List<jason_msgs.ActionStatus> retrieveStatus() {
-        List<jason_msgs.ActionStatus> aux = new ArrayList<jason_msgs.ActionStatus>(actions_status);
+    public List<jason_ros_msgs.ActionStatus> retrieveStatus() {
+        List<jason_ros_msgs.ActionStatus> aux = new ArrayList<jason_ros_msgs.ActionStatus>(actions_status);
         actions_status.clear();
         return aux;
     }
