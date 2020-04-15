@@ -5,7 +5,7 @@ apply plugin: 'eclipse'
 apply plugin: 'maven'
 apply plugin: 'maven-publish'
 
-version '1.6'
+version '1.7'
 group   'org.jason-lang'
 
 sourceCompatibility = 1.8
