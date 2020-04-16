@@ -8,19 +8,23 @@ def send_msg(msg, agents_ip):
     receiver = data.split(',')[3]
     s = socket(AF_INET, SOCK_DGRAM)
 
-    ip_sent = []
+    node_namespace = rospy.get_namespace()
+    agent_name = rospy.get_param(node_namespace + 'jason/agent_name')
+
+    agent_sent = []
     if receiver == "null":
         for addr in agents_ip.iteritems():
-            if addr[0]!= "null"  and addr[1][0] not in ip_sent:
+            if addr[0]!= "null" and addr[1][0] not in agent_sent:
+                print(agent_name)
                 s.sendto(data, (addr[1][0], addr[1][1]))
-                ip_sent.append(addr[1][0])
+                agent_sent.append(addr[0])
     else:
         IP = agents_ip[receiver][0]
         PORT = agents_ip[receiver][1]
         s.sendto(data, (IP, PORT))
 
     s.close()
-    print("Sending: " + data)
+    # print(agent_name + " Sending: " + data)
 
 def main():
     print("Starting Communication node.")
@@ -42,7 +46,7 @@ def main():
         queue_size=1,
         latch=False)
 
-    rate = rospy.Rate(100)
+    # rate = rospy.Rate(100)
     while not rospy.is_shutdown():
         if rospy.has_param(node_namespace + 'jason/agent_name'):
             agent_name = rospy.get_param(node_namespace + 'jason/agent_name')
@@ -56,12 +60,12 @@ def main():
                 if m[1][0]:
                     message = jason_ros_msgs.msg.Message()
                     message.data = m[0]
-                    print("Received " + message.data)
+                    # print(agent_name + " Received " + message.data)
                     comm_message_pub.publish(message)
             except timeout:
                 s.close()
 
-        rate.sleep()
+        # rate.sleep()
     rospy.spin()
 
 if __name__ == '__main__':
