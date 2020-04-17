@@ -15,7 +15,6 @@ def send_msg(msg, agents_ip):
     if receiver == "null":
         for addr in agents_ip.iteritems():
             if addr[0]!= "null" and addr[1][0] not in agent_sent:
-                print(agent_name)
                 s.sendto(data, (addr[1][0], addr[1][1]))
                 agent_sent.append(addr[0])
     else:
