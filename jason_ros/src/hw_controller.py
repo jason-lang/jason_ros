@@ -38,12 +38,20 @@ class CommInfo:
         if reader.has_option(name, "method"):
             self.method = reader.get(name, "method")
         if reader.has_option(name, "msg_type"):
-            self.msg_type = reader.get(name, "msg_type")
+            try:
+                msg_type_vector = reader.get(name, "msg_type").split('/');
+                if self.method == "service":
+                    self.msg_type = (msg_type_vector[1], importlib.import_module(msg_type_vector[0]+".srv"))
+                else:
+                    self.msg_type = (msg_type_vector[1], importlib.import_module(msg_type_vector[0]+".msg"))
+            except IndexError:
+                print("Did you specify the whole path of msg_type? e.g: geometry_msgs/Point32")
+                raise
+            except ImportError:
+                print("Wrong path of msg_type")
+                raise
         if reader.has_option(name, "name"):
             self.name = reader.get(name, "name")
-        if reader.has_option(name, "dependencies"):
-            self.dependencies = reader.get(name, "dependencies")
-            self.module = importlib.import_module(self.dependencies)
         if reader.has_option(name, "args"):
             args_aux = reader.get(name, "args")
             self.args = [y.split('.') for y in [x.strip() for x in args_aux.split(',')]]
@@ -62,13 +70,13 @@ class CommInfo:
     def convert_params(self, params):
 
         if self.method == "service":
-            msg_type = self.msg_type + "Request"
+            msg_type = self.msg_type[0] + "Request"
         elif self.method == "topic":
-            msg_type = self.msg_type
+            msg_type = self.msg_type[0]
         else:
             return None
 
-        param_class = getattr(self.module, msg_type)
+        param_class = getattr(self.msg_type[1], msg_type)
         param_instance = param_class()
         converted = param_instance
         for p,k in zip(params, self.params_dict):
@@ -126,7 +134,7 @@ class ActionController(CommController):
         try:
             action = self.comm_dict[action_name]
             converted_params = action.convert_params(params)
-            msg_type = getattr(action.module, action.msg_type)
+            msg_type = getattr(action.msg_type[1], action.msg_type[0])
             node_namespace = rospy.get_namespace()
             if action.method == "service":
                 rospy.wait_for_service(node_namespace + (action.name[1:] if action.name.startswith('/') else action.name))
@@ -185,7 +193,7 @@ class PerceptionController(CommController):
             node_namespace = rospy.get_namespace()
             self.subsciber_dict[name] = rospy.Subscriber(
                 node_namespace + (perception.name[1:] if perception.name.startswith('/') else perception.name),
-                getattr(perception.module, perception.msg_type),
+                getattr(perception.msg_type[1], perception.msg_type[0]),
                 self.subscriber_callback,
                 name
             )
