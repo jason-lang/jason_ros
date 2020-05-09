@@ -27,8 +27,6 @@ class CommInfo:
         self.method = ""
         self.msg_type = ""
         self.name = ""
-        self.dependencies = ""
-        self.module = None
         self.args = []
         self.params_dict = OrderedDict()
         self.buf = ""
@@ -45,8 +43,11 @@ class CommInfo:
                 else:
                     self.msg_type = (msg_type_vector[1], importlib.import_module(msg_type_vector[0]+".msg"))
             except IndexError:
-                print("Did you specify the whole path of msg_type? e.g: geometry_msgs/Point32")
-                raise
+                if reader.has_option(name, "dependencies"):
+                    self.msg_type = (msg_type_vector[0],importlib.import_module(reader.get(name, "dependencies")))
+                else:
+                    print("Did you specify the whole path of msg_type, or defined dependencies? e.g: geometry_msgs/Point32")
+                    raise
             except ImportError:
                 print("Wrong path of msg_type")
                 raise
