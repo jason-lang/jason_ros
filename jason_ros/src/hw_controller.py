@@ -88,9 +88,13 @@ class CommInfo:
                     if attr is not param_attr[-1]:
                         obj_list.append(getattr(obj_list[-1], attr))
                     else:
-                        value = getattr(__builtin__, self.params_dict[k])(p)
-                        converted = setattr_recursive(obj_list, param_attr, value)
-
+                        if self.params_dict[k].endswith('[]'):
+                            import ast
+                            param_list = ast.literal_eval(p)
+                            converted = setattr_recursive(obj_list, param_attr, param_list)
+                        else:
+                            value = getattr(__builtin__, self.params_dict[k])(p)
+                            converted = setattr_recursive(obj_list, param_attr, value)
         return converted
 
 
