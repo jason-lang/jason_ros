@@ -6,6 +6,8 @@ import rospy
 import __builtin__
 import std_msgs.msg
 import jason_ros_msgs.msg
+import re
+import ast
 from pathlib import Path
 from collections import OrderedDict
 from threading import Event
@@ -13,6 +15,16 @@ from threading import RLock
 
 def str2bool(v):
   return v.lower() in ("yes", "true", "t", "1")
+
+
+def get_obj_list(msg_instance, param_name):
+    param_attrs = param_name.split('.')
+    obj_list = [msg_instance]
+    for attr in param_attrs:
+        if hasattr(obj_list[-1], attr) and attr is not param_attrs[-1]:
+            obj_list.append(getattr(obj_list[-1], attr))
+    return param_attrs, obj_list
+
 
 def setattr_recursive(obj_list, attr_list, value):
     aux = obj_list.pop()
@@ -60,7 +72,7 @@ class CommInfo:
             aux_name = reader.get(name, "params_name")
             if reader.has_option(name, "params_type"):
                 aux_type = reader.get(name, "params_type")
-                self.params_dict = OrderedDict((x.strip(),y.strip())  for x,y in itertools.izip(aux_name.split(','),aux_type.split(',')))
+                self.params_dict = OrderedDict((x.strip(),y.strip())  for x,y in itertools.izip(aux_name.split(','),re.split(r',\s*(?![^())]*\))',aux_type))) # #split ,if they are not between []
             else:
                 self.params_dict = OrderedDict((x.strip(),"str")  for x in aux_name.split(','))
         if reader.has_option(name, "buf"):
@@ -77,24 +89,30 @@ class CommInfo:
         else:
             return None
 
-        param_class = getattr(self.msg_type[1], msg_type)
-        param_instance = param_class()
-        converted = param_instance
-        for p,k in zip(params, self.params_dict):
-            param_attr = k.split('.')
-            obj_list = [param_instance]
-            for attr in param_attr:
-                if hasattr(obj_list[-1], attr):
-                    if attr is not param_attr[-1]:
-                        obj_list.append(getattr(obj_list[-1], attr))
-                    else:
-                        if self.params_dict[k].endswith('[]'):
-                            import ast
-                            param_list = ast.literal_eval(p)
-                            converted = setattr_recursive(obj_list, param_attr, param_list)
-                        else:
-                            value = getattr(__builtin__, self.params_dict[k])(p)
-                            converted = setattr_recursive(obj_list, param_attr, value)
+        msg_class = getattr(self.msg_type[1], msg_type)
+        msg_instance = msg_class()
+        converted = msg_instance
+        for param, param_name in zip(params, self.params_dict):
+            param_attrs, obj_list = get_obj_list(msg_instance, param_name)
+            value = None
+            if re.search(r'\[(.*?)\]', self.params_dict[param_name]) and re.search(r'\((.*?)\)',self.params_dict[param_name]):
+                param_type_split = self.params_dict[param_name].split('/')
+                param_type_module = importlib.import_module(param_type_split[0] + '.msg')
+                param_type_class = getattr(param_type_module, param_type_split[1].split('[')[0])
+                value = []
+                for p in ast.literal_eval(param):
+                    param_type_instance = param_type_class()
+                    param_type_attrs = re.search(r'\((.*?)\)',param_type_split[1]).group(0).strip('()').split(',')
+                    for attr,p_aux in zip(param_type_attrs,p):
+                        attr_list, param_type_obj_list = get_obj_list(param_type_instance, attr)
+                        param_type_instance = setattr_recursive(param_type_obj_list, attr_list, p_aux)
+                    value.append(param_type_instance)
+            elif re.search(r'\[(.*?)\]', self.params_dict[param_name]):
+                value = ast.literal_eval(param)
+            else:
+                value = getattr(__builtin__, self.params_dict[param_name])(param)
+
+            converted = setattr_recursive(obj_list, param_attrs, value)
         return converted
 
 
