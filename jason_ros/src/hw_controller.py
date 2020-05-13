@@ -34,6 +34,16 @@ def setattr_recursive(obj_list, attr_list, value):
     else:
         return aux
 
+
+def getattr_recursive(obj, attrs):
+    for attr in attrs:
+        if hasattr(obj, attr):
+            obj = getattr(obj, attr)
+            if attr is attrs[-1]:
+                if isinstance(obj, tuple):
+                    obj = list(obj)
+                return obj
+
 class CommInfo:
     def __init__(self):
         self.method = ""
@@ -67,12 +77,13 @@ class CommInfo:
             self.name = reader.get(name, "name")
         if reader.has_option(name, "args"):
             args_aux = reader.get(name, "args")
-            self.args = [y.split('.') for y in [x.strip() for x in args_aux.split(',')]]
+            self.args = [re.split(r'\.\s*(?![^())]*\))', y) for y in [x.strip()
+                         for x in re.split(r',\s*(?![^())]*\))', args_aux)]]
         if reader.has_option(name, "params_name"):
             aux_name = reader.get(name, "params_name")
             if reader.has_option(name, "params_type"):
                 aux_type = reader.get(name, "params_type")
-                self.params_dict = OrderedDict((x.strip(),y.strip())  for x,y in itertools.izip(aux_name.split(','),re.split(r',\s*(?![^())]*\))',aux_type))) # #split ,if they are not between []
+                self.params_dict = OrderedDict((x.strip(),y.strip())  for x,y in itertools.izip(aux_name.split(','),re.split(r',\s*(?![^())]*\))',aux_type))) # #split ,if they are not between ()
             else:
                 self.params_dict = OrderedDict((x.strip(),"str")  for x in aux_name.split(','))
         if reader.has_option(name, "buf"):
@@ -102,7 +113,7 @@ class CommInfo:
                 value = []
                 for p in ast.literal_eval(param):
                     param_type_instance = param_type_class()
-                    param_type_attrs = re.search(r'\((.*?)\)',param_type_split[1]).group(0).strip('()').split(',')
+                    param_type_attrs = re.search(r'\((.*?)\)',param_type_split[1]).group(0).strip('()').replace(" ", "").split(',')
                     for attr,p_aux in zip(param_type_attrs,p):
                         attr_list, param_type_obj_list = get_obj_list(param_type_instance, attr)
                         param_type_instance = setattr_recursive(param_type_obj_list, attr_list, p_aux)
@@ -223,13 +234,24 @@ class PerceptionController(CommController):
 
     def subscriber_callback(self, msg, name):
         perception_param = []
-        for data in self.comm_dict[name].args:
-            obj = msg
-            for d in data:
-                if hasattr(obj, d):
-                    obj = getattr(obj, d)
-                    if d is data[-1]:
-                        perception_param.append(obj)
+        for arg in self.comm_dict[name].args:
+            obj = None
+            if re.search(r'\[(.*?)\]', arg[-1]):
+                obj = []
+                arg_aux = arg[:]
+                arg_aux[-1] = arg_aux[-1].split('[')[0]
+                obj_list = getattr_recursive(msg, arg_aux)
+                sub_args = re.search(r'\((.*?)\)', arg[-1]).group(0).strip('()').replace(" ", "").split(',')
+                for obj_aux in obj_list:
+                    obj_aux_ = []
+                    for sub_arg in sub_args:
+                        obj_aux_.append(getattr_recursive(obj_aux, sub_arg.split('.')))
+                    obj.append(obj_aux_)
+            else:
+                obj = getattr_recursive(msg, arg)
+
+            perception_param.append(obj)
+
         perception_param = map(str, perception_param)
 
         perception = jason_ros_msgs.msg.Perception()
