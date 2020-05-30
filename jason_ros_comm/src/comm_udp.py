@@ -3,6 +3,7 @@ from socket import *
 import rospy
 import jason_ros_msgs.msg
 
+
 def send_msg(msg, agents_ip):
     data = msg.data
     receiver = data.split(',')[3]
@@ -11,10 +12,10 @@ def send_msg(msg, agents_ip):
     node_namespace = rospy.get_namespace()
     agent_name = rospy.get_param(node_namespace + 'jason/agent_name')
 
-    agent_sent = []
+    agent_sent = [agent_name]
     if receiver == "null":
         for addr in agents_ip.iteritems():
-            if addr[0]!= "null" and addr[1][0] not in agent_sent:
+            if addr[0] != "null" and addr[0] not in agent_sent:
                 s.sendto(data, (addr[1][0], addr[1][1]))
                 agent_sent.append(addr[0])
     else:
@@ -25,6 +26,7 @@ def send_msg(msg, agents_ip):
     s.close()
     # print(agent_name + " Sending: " + data)
 
+
 def main():
     print("Starting Communication node.")
     rospy.init_node('jason_comm')
@@ -32,7 +34,9 @@ def main():
     node_name = rospy.get_name()
 
     param_names = rospy.get_param_names()
-    agents_ip = {name[len(node_name + '/address_'):]:rospy.get_param(name) for name in param_names if name.startswith(node_name + '/address_')}
+    agents_ip = {name[len(node_name + '/address_'):]: rospy.get_param(name)
+                 for name in param_names
+                 if name.startswith(node_name + '/address_')}
 
     send_msg_sub = rospy.Subscriber(
         node_namespace + 'jason/send_msg',
@@ -66,6 +70,7 @@ def main():
 
         # rate.sleep()
     rospy.spin()
+
 
 if __name__ == '__main__':
     main()
