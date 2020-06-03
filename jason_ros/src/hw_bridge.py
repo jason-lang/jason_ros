@@ -6,15 +6,20 @@ import std_msgs.msg
 import jason_ros_msgs.msg
 import signal
 
+
 def arg_parser():
     parser = argparse.ArgumentParser(description="HardwareBridge node")
 
-    parser.add_argument("-a","--action", help="Action manifest path", nargs=1, type=str)
-    parser.add_argument("-p","--perception", help="Perception manifest path", nargs=1, type=str)
-    parser.add_argument("-r","--param", help="Rosparam .yaml", nargs=1, type=str)
+    parser.add_argument(
+        "-a", "--action", help="Action manifest path", nargs=1, type=str)
+    parser.add_argument("-p", "--perception",
+                        help="Perception manifest path", nargs=1, type=str)
+    parser.add_argument(
+        "-r", "--param", help="Rosparam .yaml", nargs=1, type=str)
 
     args, unknown = parser.parse_known_args()
     return vars(args)
+
 
 def act(msg, args):
     action_controller = args[0]
@@ -23,7 +28,8 @@ def act(msg, args):
     action_status = jason_ros_msgs.msg.ActionStatus()
     action_status.id = msg.header.seq
 
-    action_status.result = action_controller.perform_action(msg.action_name, msg.parameters)
+    action_status.result = action_controller.perform_action(
+        msg.action_name, msg.parameters)
 
     pub.publish(action_status)
 
@@ -72,7 +78,7 @@ def main():
     jason_percepts_pub = rospy.Publisher(
         'jason/percepts',
         jason_ros_msgs.msg.Perception,
-        queue_size=(2*perception_controller.comm_len),
+        queue_size=(2 * perception_controller.comm_len),
         latch=False)
 
     signal.signal(signal.SIGINT, signal.SIG_DFL)

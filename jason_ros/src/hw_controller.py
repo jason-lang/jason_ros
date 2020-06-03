@@ -13,8 +13,9 @@ from collections import OrderedDict
 from threading import Event
 from threading import RLock
 
+
 def str2bool(v):
-  return v.lower() in ("yes", "true", "t", "1")
+    return v.lower() in ("yes", "true", "t", "1")
 
 
 def get_obj_list(msg_instance, param_name):
@@ -44,6 +45,7 @@ def getattr_recursive(obj, attrs):
                     obj = list(obj)
                 return obj
 
+
 class CommInfo:
     def __init__(self):
         self.method = ""
@@ -59,16 +61,27 @@ class CommInfo:
             self.method = reader.get(name, "method")
         if reader.has_option(name, "msg_type"):
             try:
-                msg_type_vector = reader.get(name, "msg_type").split('/');
+                msg_type_vector = reader.get(name, "msg_type").split('/')
                 if self.method == "service":
-                    self.msg_type = (msg_type_vector[1], importlib.import_module(msg_type_vector[0]+".srv"))
+                    self.msg_type = (
+                        msg_type_vector[1], importlib.import_module(
+                            msg_type_vector[0] + ".srv"))
                 else:
-                    self.msg_type = (msg_type_vector[1], importlib.import_module(msg_type_vector[0]+".msg"))
+                    self.msg_type = (
+                        msg_type_vector[1], importlib.import_module(
+                            msg_type_vector[0] + ".msg"))
             except IndexError:
                 if reader.has_option(name, "dependencies"):
-                    self.msg_type = (msg_type_vector[0],importlib.import_module(reader.get(name, "dependencies")))
+                    self.msg_type = (
+                        msg_type_vector[0],
+                        importlib.import_module(
+                            reader.get(
+                                name,
+                                "dependencies")))
                 else:
-                    print("Did you specify the whole path of msg_type, or defined dependencies? e.g: geometry_msgs/Point32")
+                    print(
+                        "Did you specify the whole path of msg_type, or \
+                         defined dependencies? e.g: geometry_msgs/Point32")
                     raise
             except ImportError:
                 print("Wrong path of msg_type")
@@ -77,15 +90,26 @@ class CommInfo:
             self.name = reader.get(name, "name")
         if reader.has_option(name, "args"):
             args_aux = reader.get(name, "args")
-            self.args = [re.split(r'\.\s*(?![^())]*\))', y) for y in [x.strip()
-                         for x in re.split(r',\s*(?![^())]*\))', args_aux)]]
+            self.args = [
+                re.split(
+                    r'\.\s*(?![^())]*\))',
+                    y) for y in [
+                    x.strip() for x in re.split(
+                        r',\s*(?![^())]*\))',
+                        args_aux)]]
         if reader.has_option(name, "params_name"):
             aux_name = reader.get(name, "params_name")
             if reader.has_option(name, "params_type"):
                 aux_type = reader.get(name, "params_type")
-                self.params_dict = OrderedDict((x.strip(),y.strip())  for x,y in itertools.izip(aux_name.split(','),re.split(r',\s*(?![^())]*\))',aux_type))) # #split ,if they are not between ()
+
+                # split ,if they are not between ()
+                self.params_dict = OrderedDict(
+                    (x.strip(), y.strip()) for x, y in itertools.izip(
+                        aux_name.split(','), re.split(
+                            r',\s*(?![^())]*\))', aux_type)))
             else:
-                self.params_dict = OrderedDict((x.strip(),"str")  for x in aux_name.split(','))
+                self.params_dict = OrderedDict(
+                    (x.strip(), "str") for x in aux_name.split(','))
         if reader.has_option(name, "buf"):
             self.buf = reader.get(name, "buf")
         if reader.has_option(name, "latch"):
@@ -106,22 +130,35 @@ class CommInfo:
         for param, param_name in zip(params, self.params_dict):
             param_attrs, obj_list = get_obj_list(msg_instance, param_name)
             value = None
-            if re.search(r'\[(.*?)\]', self.params_dict[param_name]) and re.search(r'\((.*?)\)',self.params_dict[param_name]):
+            if re.search(
+                    r'\[(.*?)\]',
+                    self.params_dict[param_name]) and re.search(
+                    r'\((.*?)\)',
+                    self.params_dict[param_name]):
                 param_type_split = self.params_dict[param_name].split('/')
-                param_type_module = importlib.import_module(param_type_split[0] + '.msg')
-                param_type_class = getattr(param_type_module, param_type_split[1].split('[')[0])
+                param_type_module = importlib.import_module(
+                    param_type_split[0] + '.msg')
+                param_type_class = getattr(
+                    param_type_module, param_type_split[1].split('[')[0])
                 value = []
                 for p in ast.literal_eval(param):
                     param_type_instance = param_type_class()
-                    param_type_attrs = re.search(r'\((.*?)\)',param_type_split[1]).group(0).strip('()').replace(" ", "").split(',')
-                    for attr,p_aux in zip(param_type_attrs,p):
-                        attr_list, param_type_obj_list = get_obj_list(param_type_instance, attr)
-                        param_type_instance = setattr_recursive(param_type_obj_list, attr_list, p_aux)
+                    param_type_attrs = re.search(
+                        r'\((.*?)\)',
+                        param_type_split[1]).group(0).strip('()').replace(
+                        " ",
+                        "").split(',')
+                    for attr, p_aux in zip(param_type_attrs, p):
+                        attr_list, param_type_obj_list = get_obj_list(
+                            param_type_instance, attr)
+                        param_type_instance = setattr_recursive(
+                            param_type_obj_list, attr_list, p_aux)
                     value.append(param_type_instance)
             elif re.search(r'\[(.*?)\]', self.params_dict[param_name]):
                 value = ast.literal_eval(param)
             else:
-                value = getattr(__builtin__, self.params_dict[param_name])(param)
+                value = getattr(
+                    __builtin__, self.params_dict[param_name])(param)
 
             converted = setattr_recursive(obj_list, param_attrs, value)
         return converted
@@ -144,7 +181,6 @@ class CommController:
         if man_path.is_file():
             reader.read(str(man_path))
             self.get_info(reader)
-
 
     def get_info(self, reader):
         comm_list = reader.sections()
@@ -175,7 +211,7 @@ class ActionController(CommController):
                     service_aux = rospy.ServiceProxy(action.name, msg_type)
                     service_aux(converted_params)
                 except rospy.ServiceException as e:
-                    print("service "+ action.name +" call failed: %s." % e)
+                    print("service " + action.name + " call failed: %s." % e)
                 action_completed = True
             elif action.method == "topic":
                 latch = str2bool(action.latch)
@@ -239,11 +275,14 @@ class PerceptionController(CommController):
                 arg_aux = arg[:]
                 arg_aux[-1] = arg_aux[-1].split('[')[0]
                 obj_list = getattr_recursive(msg, arg_aux)
-                sub_args = re.search(r'\((.*?)\)', arg[-1]).group(0).strip('()').replace(" ", "").split(',')
+                sub_args = re.search(r'\((.*?)\)', arg[-1]).group(0) \
+                             .strip('()').replace(" ", "").split(',')
+
                 for obj_aux in obj_list:
                     obj_aux_ = []
                     for sub_arg in sub_args:
-                        obj_aux_.append(getattr_recursive(obj_aux, sub_arg.split('.')))
+                        obj_aux_.append(getattr_recursive(
+                            obj_aux, sub_arg.split('.')))
                     obj.append(obj_aux_)
             else:
                 obj = getattr_recursive(msg, arg)
