@@ -169,11 +169,10 @@ class ActionController(CommController):
             action = self.comm_dict[action_name]
             converted_params = action.convert_params(params)
             msg_type = getattr(action.msg_type[1], action.msg_type[0])
-            node_namespace = rospy.get_namespace()
             if action.method == "service":
-                rospy.wait_for_service(node_namespace + (action.name[1:] if action.name.startswith('/') else action.name))
+                rospy.wait_for_service(action.name)
                 try:
-                    service_aux = rospy.ServiceProxy(node_namespace + (action.name[1:] if action.name.startswith('/') else action.name), msg_type)
+                    service_aux = rospy.ServiceProxy(action.name, msg_type)
                     service_aux(converted_params)
                 except rospy.ServiceException as e:
                     print("service "+ action.name +" call failed: %s." % e)
@@ -181,7 +180,7 @@ class ActionController(CommController):
             elif action.method == "topic":
                 latch = str2bool(action.latch)
                 topic_pub = rospy.Publisher(
-                    node_namespace + (action.name[1:] if action.name.startswith('/') else action.name),
+                    action.name,
                     msg_type,
                     queue_size=1,
                     latch=latch)
@@ -224,9 +223,8 @@ class PerceptionController(CommController):
         for comm in self.comm_dict.items():
             name = comm[0]
             perception = comm[1]
-            node_namespace = rospy.get_namespace()
             self.subsciber_dict[name] = rospy.Subscriber(
-                node_namespace + (perception.name[1:] if perception.name.startswith('/') else perception.name),
+                perception.name,
                 getattr(perception.msg_type[1], perception.msg_type[0]),
                 self.subscriber_callback,
                 name

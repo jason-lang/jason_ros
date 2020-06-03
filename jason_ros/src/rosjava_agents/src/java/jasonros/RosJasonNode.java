@@ -27,7 +27,7 @@ import jason_ros_msgs.Perception;
 public class RosJasonNode extends AbstractNodeMain {
     NodeConfiguration nodeConfiguration = NodeConfiguration.newPrivate();
     ParameterTree parameterTree;
-    String namespace = "";
+    // String namespace = "";
     Publisher<jason_ros_msgs.Action> actionPub;
     Publisher<jason_ros_msgs.Message> msgPub;
 
@@ -48,16 +48,12 @@ public class RosJasonNode extends AbstractNodeMain {
     public void onStart(final ConnectedNode connectedNode) {
         parameterTree = connectedNode.getParameterTree();
 
-        if(!connectedNode.getResolver().getNamespace().isRoot()){
-          namespace = connectedNode.getResolver().getNamespace().toString();
-        }
+        actionPub = connectedNode.newPublisher("jason/actions", jason_ros_msgs.Action._TYPE);
 
-        actionPub = connectedNode.newPublisher(namespace+"/jason/actions", jason_ros_msgs.Action._TYPE);
-
-        msgPub = connectedNode.newPublisher(namespace+"/jason/send_msg", jason_ros_msgs.Message._TYPE);
+        msgPub = connectedNode.newPublisher("jason/send_msg", jason_ros_msgs.Message._TYPE);
 
         Subscriber<jason_ros_msgs.Perception> perceptsSub =
-                connectedNode.newSubscriber(namespace+"/jason/percepts", jason_ros_msgs.Perception._TYPE);
+                connectedNode.newSubscriber("jason/percepts", jason_ros_msgs.Perception._TYPE);
 
         perceptsSub.addMessageListener(new MessageListener<jason_ros_msgs.Perception>() {
             @Override
@@ -67,7 +63,7 @@ public class RosJasonNode extends AbstractNodeMain {
         });
 
         Subscriber<jason_ros_msgs.ActionStatus> actionsStatusSub =
-                connectedNode.newSubscriber(namespace+"/jason/actions_status", jason_ros_msgs.ActionStatus._TYPE);
+                connectedNode.newSubscriber("jason/actions_status", jason_ros_msgs.ActionStatus._TYPE);
 
         actionsStatusSub.addMessageListener(new MessageListener<jason_ros_msgs.ActionStatus>() {
             @Override
@@ -77,7 +73,7 @@ public class RosJasonNode extends AbstractNodeMain {
         });
 
         Subscriber<jason_ros_msgs.Message> msgSub =
-                connectedNode.newSubscriber(namespace+"/jason/receive_msg", jason_ros_msgs.Message._TYPE);
+                connectedNode.newSubscriber("jason/receive_msg", jason_ros_msgs.Message._TYPE);
 
         msgSub.addMessageListener(new MessageListener<jason_ros_msgs.Message>() {
             @Override
@@ -144,6 +140,6 @@ public class RosJasonNode extends AbstractNodeMain {
     }
 
     public void setNameParameter(String agent_name){
-      parameterTree.set(namespace + "/jason/agent_name", agent_name);
+      parameterTree.set("jason/agent_name", agent_name);
     }
 }

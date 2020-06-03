@@ -2,7 +2,7 @@
 rate = 1
 
 [state]
-name = /hw/teste2
+name = hw/teste2
 msg_type = String
 dependencies = std_msgs.msg
 args = data

@@ -33,7 +33,7 @@ def main():
     rospy.init_node('HwBridge')
 
     args = arg_parser()
-    if args["param"] != None:
+    if args["param"] is not None:
         import yaml
         import rosparam
         with open(args["param"][0], 'r') as stream:
@@ -44,26 +44,25 @@ def main():
                 print(exc)
 
     action_controller = ActionController()
-    if args["action"] != None:
+    if args["action"] is not None:
         action_controller.read_manifest(args["action"][0])
     else:
         action_controller.read_manifest()
 
-    node_namespace = rospy.get_namespace()
     jason_actions_status_pub = rospy.Publisher(
-    node_namespace+ 'jason/actions_status',
-    jason_ros_msgs.msg.ActionStatus,
-    queue_size=1,
-    latch=False)
+        'jason/actions_status',
+        jason_ros_msgs.msg.ActionStatus,
+        queue_size=1,
+        latch=False)
 
     jason_action_sub = rospy.Subscriber(
-        node_namespace + 'jason/actions',
+        'jason/actions',
         jason_ros_msgs.msg.Action,
-        act, (action_controller,jason_actions_status_pub))
-
+        act, (action_controller, jason_actions_status_pub))
 
     perception_controller = PerceptionController()
-    if args["perception"] != None:
+
+    if args["perception"] is not None:
         perception_controller.read_manifest(args["perception"][0])
     else:
         perception_controller.read_manifest()
@@ -71,17 +70,17 @@ def main():
     perception_controller.start_perceiving()
 
     jason_percepts_pub = rospy.Publisher(
-    node_namespace + 'jason/percepts',
-    jason_ros_msgs.msg.Perception,
-    queue_size=(2*perception_controller.comm_len),
-    latch=False)
+        'jason/percepts',
+        jason_ros_msgs.msg.Perception,
+        queue_size=(2*perception_controller.comm_len),
+        latch=False)
 
     signal.signal(signal.SIGINT, signal.SIG_DFL)
     rate = rospy.Rate(perception_controller.rate)
     while not rospy.is_shutdown():
         perception_controller.p_lock.acquire()
         for p in perception_controller.perceptions.items():
-            if p[1] != None:
+            if p[1] is not None:
                 jason_percepts_pub.publish(p[1])
                 perception_controller.perceptions[p[0]] = None
         perception_controller.p_lock.release()
@@ -89,6 +88,7 @@ def main():
         perception_controller.p_event.clear()
         rate.sleep()
     rospy.spin()
+
 
 if __name__ == '__main__':
     main()
