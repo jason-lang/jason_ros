@@ -157,8 +157,11 @@ class CommInfo:
             elif re.search(r'\[(.*?)\]', self.params_dict[param_name]):
                 value = ast.literal_eval(param)
             else:
-                value = getattr(
-                    __builtin__, self.params_dict[param_name])(param)
+                if self.params_dict[param_name] == "bool":
+                    value = str2bool(param)
+                else:
+                    value = getattr(
+                        __builtin__, self.params_dict[param_name])(param)
 
             converted = setattr_recursive(obj_list, param_attrs, value)
         return converted
