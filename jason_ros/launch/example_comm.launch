@@ -1,0 +1,14 @@
+<launch>
+  <!-- <group ns="myagent"> -->
+    <node name="hw_bridge" pkg="jason_ros" type="hw_bridge.py"
+      args="-a $(find jason_ros)/config/actions_manifest
+      -p $(find jason_ros)/config/perceptions_manifest" output="screen"/>
+
+    <node name="agent" pkg="jason_ros" type="gradle_starter.sh"
+      args="$(find jason_ros)/src/rosjava_agents/build.gradle" output="screen"/>
+
+    <node name="comm" pkg="jason_ros_comm" type="comm_udp.py" output="screen">
+      <rosparam command="load" file="$(find jason_ros_comm)/params/local.yaml" />
+    </node>
+  <!-- </group> -->
+</launch>
