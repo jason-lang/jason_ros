@@ -212,3 +212,21 @@ Note: Use the correct version according to jason_ros_msgs/package.xml
 ## Examples
 A functional example using docker can be found at the repo [MAS-UAV](https://github.com/Rezenders/MAS-UAV)
 For more examples check the example folder
+
+## Reference
+If you find this repository usefull and use it in your project, please consider citing it:
+
+```
+@article{silva2020embedded,
+  title={Embedded Architecture Composed of Cognitive Agents and ROS for Programming Intelligent Robots},
+  author={Silva, Gustavo R and Becker, Leandro B and H{\"u}bner, Jomi F},
+  journal={IFAC-PapersOnLine},
+  volume={53},
+  number={2},
+  pages={10000--10005},
+  year={2020},
+  publisher={Elsevier}
+}
+```
+
+[Paper link](https://www.sciencedirect.com/science/article/pii/S2405896320334819)
