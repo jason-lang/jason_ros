@@ -269,30 +269,43 @@ class PerceptionController(CommController):
                 name
             )
 
-    def subscriber_callback(self, msg, name):
-        perception_param = []
-        for arg in self.comm_dict[name].args:
-            obj = None
+    def get_perception_param(self, from_obj, arg):
+        obj = None
+        try:
             if re.search(r'\[(.*?)\]', arg[-1]):
                 obj = []
                 arg_aux = arg[:]
                 arg_aux[-1] = arg_aux[-1].split('[')[0]
-                obj_list = getattr_recursive(msg, arg_aux)
-                sub_args = re.search(r'\((.*?)\)', arg[-1]).group(0) \
-                             .strip('()').replace(" ", "").split(',')
-
-                for obj_aux in obj_list:
-                    obj_aux_ = []
-                    for sub_arg in sub_args:
-                        obj_aux_.append(getattr_recursive(
-                            obj_aux, sub_arg.split('.')))
-                    obj.append(obj_aux_)
+                obj_list = getattr_recursive(from_obj, arg_aux)
+                sub_args = re.search(r'\((.+)\)', arg[-1]).group(1)
+                if re.search(r'\[(.*?)\]', sub_args):
+                    for obj_aux in obj_list:
+                        obj.append(
+                            self.get_perception_param(obj_aux, [sub_args]))
+                else:
+                    sub_args = sub_args.replace(" ", "").split(',')
+                    for obj_aux in obj_list:
+                        obj_aux_ = []
+                        for sub_arg in sub_args:
+                            sub_obj = getattr_recursive(
+                                        obj_aux, sub_arg.split('.'))
+                            obj_aux_.append(sub_obj)
+                        obj.append(obj_aux_)
             else:
-                obj = getattr_recursive(msg, arg)
+                obj = getattr_recursive(from_obj, arg)
+        except AttributeError:
+            pass
 
+        return obj
+
+    def subscriber_callback(self, msg, name):
+        perception_param = []
+        for arg in self.comm_dict[name].args:
+            obj = self.get_perception_param(msg, arg)
             perception_param.append(obj)
 
-        perception_param = map(str, perception_param)
+        perception_param = \
+            [string.replace("'", "") for string in map(str, perception_param)]
 
         perception = jason_ros_msgs.msg.Perception()
         perception.perception_name = name
