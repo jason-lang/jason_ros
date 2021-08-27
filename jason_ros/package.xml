@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<package format="2">
+<package format="3">
   <name>jason_ros</name>
   <version>1.6.0</version>
   <description>The jason_hw_bridge package</description>
@@ -22,7 +22,8 @@
   <build_export_depend>jason_ros_msgs</build_export_depend>
   <exec_depend>jason_ros_msgs</exec_depend>
 
-  <exec_depend>python-pathlib</exec_depend>
+  <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-pathlib</exec_depend>
+  <exec_depend condition="$ROS_PYTHON_VERSION == 3">python-pathlib2</exec_depend>
 
 
   <export>
