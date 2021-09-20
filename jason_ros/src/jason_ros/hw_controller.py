@@ -1,9 +1,5 @@
-#!/usr/bin/env python2
-import ConfigParser
 import importlib
-import itertools
 import rospy
-import __builtin__
 import std_msgs.msg
 import jason_ros_msgs.msg
 import re
@@ -104,7 +100,7 @@ class CommInfo:
 
                 # split ,if they are not between ()
                 self.params_dict = OrderedDict(
-                    (x.strip(), y.strip()) for x, y in itertools.izip(
+                    (x.strip(), y.strip()) for x, y in zip(
                         aux_name.split(','), re.split(
                             r',\s*(?![^())]*\))', aux_type)))
             else:
@@ -160,8 +156,14 @@ class CommInfo:
                 if self.params_dict[param_name] == "bool":
                     value = str2bool(param)
                 else:
-                    value = getattr(
+                    try:
+                        import __builtin__
+                        value = getattr(
                         __builtin__, self.params_dict[param_name])(param)
+                    except ImportError:
+                        import builtins
+                        value = getattr(
+                        builtins, self.params_dict[param_name])(param)
 
             converted = setattr_recursive(obj_list, param_attrs, value)
         return converted
@@ -174,7 +176,12 @@ class CommController:
         self.comm_len = 0
 
     def read_manifest(self, *args):
-        reader = ConfigParser.RawConfigParser()
+        try:
+            import ConfigParser as config_parser
+        except ImportError:
+            import configparser as config_parser
+
+        reader = config_parser.RawConfigParser()
 
         if len(args) > 0 and Path(args[0]).is_file():
             man_path = Path(args[0])

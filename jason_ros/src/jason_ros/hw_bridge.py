@@ -1,5 +1,5 @@
-#!/usr/bin/env python2
-from hw_controller import *
+#!/usr/bin/env python
+from jason_ros.hw_controller import *
 import rospy
 import argparse
 import std_msgs.msg
