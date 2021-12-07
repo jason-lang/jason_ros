@@ -11,6 +11,7 @@ import org.ros.node.DefaultNodeMainExecutor;
 import org.ros.node.NodeConfiguration;
 import org.ros.node.NodeMain;
 import org.ros.node.NodeMainExecutor;
+import org.ros.namespace.GraphName;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,6 +41,7 @@ public class RosArch extends AgArch {
         String nodeClassName = loader.getNodeClassName();
         System.out.println("Loading node class: " + loader.getNodeClassName());
         NodeConfiguration nodeConfiguration = loader.build();
+        nodeConfiguration.setNodeName(GraphName.of("jason/agent/" + this.getAgName()));
         NodeMain nodeMain = null;
 
         try {
