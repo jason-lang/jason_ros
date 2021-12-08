@@ -2,7 +2,7 @@ FROM ros:kinetic-ros-core
 
 # Install packages
 RUN apt-get update && apt-get install -y \
-	vim \
+	build-essential \
 	default-jdk \
 	gradle  \
 	maven \
@@ -32,7 +32,7 @@ RUN apt-get update && apt-get install -y \
 
 # Download, install and configure rosjava
 WORKDIR /
-RUN ["/bin/bash","-c","mkdir -p ~/rosjava/src && wstool init -j4 ~/rosjava/src https://raw.githubusercontent.com/rosjava/rosjava/kinetic/rosjava.rosinstall && source /opt/ros/kinetic/setup.bash && cd ~/rosjava/ && rosdep update && rosdep install --from-paths src -i -y && catkin_make"]
+RUN ["/bin/bash","-c","mkdir -p ~/rosjava/src && wstool init -j4 ~/rosjava/src https://raw.githubusercontent.com/rosjava/rosjava/kinetic/rosjava.rosinstall && source /opt/ros/kinetic/setup.bash && cd ~/rosjava/ && sudo rosdep init && rosdep update && rosdep install --from-paths src -i -y && catkin_make"]
 
 RUN [ "/bin/bash","-c","source /opt/ros/kinetic/setup.bash && \
         mkdir -p /jason_ros_ws/src && \
