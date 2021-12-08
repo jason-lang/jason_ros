@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from jason_ros.hw_controller import *
 import rospy
+import rosparam
 import argparse
 import std_msgs.msg
 import jason_ros_msgs.msg
@@ -15,7 +16,7 @@ def arg_parser():
     parser.add_argument("-p", "--perception",
                         help="Perception manifest path", nargs=1, type=str)
     parser.add_argument(
-        "-r", "--param", help="Rosparam .yaml", nargs=1, type=str)
+        "-r", "--param", help="Rosparam.yaml", nargs=1, type=str)
 
     args, unknown = parser.parse_known_args()
     return vars(args)
@@ -38,10 +39,13 @@ def main():
     print("Starting HwBridge node.")
     rospy.init_node('HwBridge')
 
+    actions_manifest_file = rospy.get_param(rospy.get_name() + "/actions_manifest", "actions_manifest")
+    perceptions_manifest_file = rospy.get_param(rospy.get_name() + "/perceptions_manifest", "perceptions_manifest")
+    agent_name = rospy.get_param(rospy.get_name() + "/agent_name", "")
+
     args = arg_parser()
     if args["param"] is not None:
         import yaml
-        import rosparam
         with open(args["param"][0], 'r') as stream:
             try:
                 yaml_file = yaml.safe_load(stream)
@@ -49,11 +53,13 @@ def main():
             except yaml.YAMLError as exc:
                 print(exc)
 
-    action_controller = ActionController()
     if args["action"] is not None:
-        action_controller.read_manifest(args["action"][0])
-    else:
-        action_controller.read_manifest()
+        actions_manifest_file = args["action"][0]
+    if args["perception"] is not None:
+        perceptions_manifest_file = args["perception"][0]
+
+    action_controller = ActionController()
+    action_controller.read_manifest(actions_manifest_file)
 
     jason_actions_status_pub = rospy.Publisher(
         'jason/actions_status',
@@ -64,15 +70,10 @@ def main():
     jason_action_sub = rospy.Subscriber(
         'jason/actions',
         jason_ros_msgs.msg.Action,
-        act, (action_controller, jason_actions_status_pub))
+        act, (action_controller, jason_actions_status_pub, agent_name))
 
-    perception_controller = PerceptionController()
-
-    if args["perception"] is not None:
-        perception_controller.read_manifest(args["perception"][0])
-    else:
-        perception_controller.read_manifest()
-
+    perception_controller = PerceptionController(agent_name)
+    perception_controller.read_manifest(perceptions_manifest_file)
     perception_controller.start_perceiving()
 
     jason_percepts_pub = rospy.Publisher(
