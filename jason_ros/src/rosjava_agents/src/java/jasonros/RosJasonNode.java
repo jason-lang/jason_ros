@@ -38,6 +38,7 @@ public class RosJasonNode extends AbstractNodeMain {
 
     List<jason_ros_msgs.ActionStatus> actions_status = new ArrayList<jason_ros_msgs.ActionStatus>();
     boolean connected;
+    String agent_name = "";
 
     @Override
     public GraphName getDefaultNodeName() {
@@ -99,6 +100,7 @@ public class RosJasonNode extends AbstractNodeMain {
                 nodeConfiguration.getTopicMessageFactory().newFromType(std_msgs.Header._TYPE);
         act.setHeader(header);
 
+        act.setAgentName(this.agent_name);
         act.setActionName(action.getActionTerm().getFunctor());
 
         if (action.getActionTerm().hasTerm()) {
@@ -140,6 +142,7 @@ public class RosJasonNode extends AbstractNodeMain {
     }
 
     public void setNameParameter(String agent_name){
+      this.agent_name = agent_name;
       parameterTree.set("jason/agent_name", agent_name);
     }
 }

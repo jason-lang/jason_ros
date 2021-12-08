@@ -23,16 +23,18 @@ def arg_parser():
 
 
 def act(msg, args):
-    action_controller = args[0]
-    pub = args[1]
+    if args[2] == "" or args[2]== msg.agent_name:
+        action_controller = args[0]
+        pub = args[1]
 
-    action_status = jason_ros_msgs.msg.ActionStatus()
-    action_status.id = msg.header.seq
+        action_status = jason_ros_msgs.msg.ActionStatus()
+        action_status.id = msg.header.seq
+        action_status.agent_name = msg.agent_name
 
-    action_status.result = action_controller.perform_action(
-        msg.action_name, msg.parameters)
+        action_status.result = action_controller.perform_action(
+            msg.action_name, msg.parameters)
 
-    pub.publish(action_status)
+        pub.publish(action_status)
 
 
 def main():

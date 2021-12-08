@@ -76,58 +76,61 @@ public class RosArch extends AgArch {
     public List<Literal> perceive() {
         jason_ros_msgs.Perception perception = rosNode.getPerception();
         while (perception != null) {
-            TransitionSystem ts = getTS();
-            Literal bel = createLiteral(perception.getPerceptionName());
-            bel.addAnnot(ts.getAg().getBB().TPercept);
+            String agent_name = perception.getAgentName();
+            if(agent_name.equals(this.getAgName())){
+              TransitionSystem ts = getTS();
+              Literal bel = createLiteral(perception.getPerceptionName());
+              bel.addAnnot(ts.getAg().getBB().TPercept);
 
-            for (String param : perception.getParameters()) {
+              for (String param : perception.getParameters()) {
                 try {
-                    Term p = parseTerm(param);
-                    if (p.isVar()) {
-                        p = new StringTermImpl(param);
-                    }
-                    bel.addTerm(p);
+                  Term p = parseTerm(param);
+                  if (p.isVar()) {
+                    p = new StringTermImpl(param);
+                  }
+                  bel.addTerm(p);
                 } catch (ParseException e) {
-                    bel.addTerm(new StringTermImpl(param));
+                  bel.addTerm(new StringTermImpl(param));
                 }
-            }
+              }
 
-            boolean bufUpdate = perception.getUpdate();
-            if (bufUpdate) {
+              boolean bufUpdate = perception.getUpdate();
+              if (bufUpdate) {
                 Iterator<Literal> ibb =
-                        ts.getAg().getBB().getCandidateBeliefs(new PredicateIndicator(
-                                perception.getPerceptionName(), perception.getParameters().size()));
+                ts.getAg().getBB().getCandidateBeliefs(new PredicateIndicator(
+                perception.getPerceptionName(), perception.getParameters().size()));
                 boolean addBelief = true;
                 while (ibb != null && ibb.hasNext()) {
-                    Literal l = ibb.next();
-                    if (l.equals(bel)) {
-                        addBelief = false;
-                    } else {
-                        ibb.remove(); // remove l as perception from BB
+                  Literal l = ibb.next();
+                  if (l.equals(bel)) {
+                    addBelief = false;
+                  } else {
+                    ibb.remove(); // remove l as perception from BB
 
-                        // only produce -bel event if the agent has plans for the event
-                        Trigger te = new Trigger(TEOperator.del, TEType.belief, l);
-                        if (ts.getC().hasListener() || ts.getAg().getPL().hasCandidatePlan(te)) {
-                            l = ASSyntax.createLiteral(l.getFunctor(), l.getTermsArray());
-                            l.addAnnot(ts.getAg().getBB().TPercept);
-                            te.setLiteral(l);
-                            ts.getC().addEvent(new Event(te, Intention.EmptyInt));
-                        }
+                    // only produce -bel event if the agent has plans for the event
+                    Trigger te = new Trigger(TEOperator.del, TEType.belief, l);
+                    if (ts.getC().hasListener() || ts.getAg().getPL().hasCandidatePlan(te)) {
+                      l = ASSyntax.createLiteral(l.getFunctor(), l.getTermsArray());
+                      l.addAnnot(ts.getAg().getBB().TPercept);
+                      te.setLiteral(l);
+                      ts.getC().addEvent(new Event(te, Intention.EmptyInt));
                     }
+                  }
                 }
                 if (addBelief) {
-                    try {
-                        ts.getAg().addBel(bel);
-                    } catch (RevisionFailedException e) {
-                        System.out.println("Error adding new belief");
-                    }
-                }
-            } else {
-                try {
-                    getTS().getAg().addBel(bel);
-                } catch (RevisionFailedException e) {
+                  try {
+                    ts.getAg().addBel(bel);
+                  } catch (RevisionFailedException e) {
                     System.out.println("Error adding new belief");
+                  }
                 }
+              } else {
+                try {
+                  getTS().getAg().addBel(bel);
+                } catch (RevisionFailedException e) {
+                  System.out.println("Error adding new belief");
+                }
+              }
             }
             perception = rosNode.getPerception();
         }
@@ -142,17 +145,20 @@ public class RosArch extends AgArch {
     }
 
     public void actionsStatus(jason_ros_msgs.ActionStatus data) {
-        int id = data.getId();
-        boolean result = data.getResult();
+        String agent_name = data.getAgentName();
+        if(agent_name.equals(this.getAgName())){
+          int id = data.getId();
+          boolean result = data.getResult();
 
-        ActionExec action = actionsWaiting.get(id);
+          ActionExec action = actionsWaiting.get(id);
 
-        if (action != null) {
+          if (action != null) {
             action.setResult(result);
             actionExecuted(action);
             actionsWaiting.remove(id);
-        } else {
+          } else {
             System.out.println("Action not found.");
+          }
         }
     }
 

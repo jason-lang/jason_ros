@@ -191,6 +191,9 @@ class CommController:
         if man_path.is_file():
             reader.read(str(man_path))
             self.get_info(reader)
+        else:
+            print("Can't find: ", man_path)
+
 
     def get_info(self, reader):
         comm_list = reader.sections()
@@ -248,14 +251,15 @@ class ActionController(CommController):
 
 
 class PerceptionController(CommController):
-    def __init__(self):
+    def __init__(self, agent_name):
         CommController.__init__(self)
         self.default_path = "perceptions_manifest"
         self.subsciber_dict = dict()
         self.perceptions = dict()
-        self.rate = None
+        self.rate = 30
         self.p_event = Event()
         self.p_lock = RLock()
+        self.agent_name = agent_name
 
     def get_info(self, reader):
         default_section = reader.defaults()
@@ -315,6 +319,7 @@ class PerceptionController(CommController):
             [string.replace("'", "") for string in map(str, perception_param)]
 
         perception = jason_ros_msgs.msg.Perception()
+        perception.agent_name = self.agent_name
         perception.perception_name = name
         perception.parameters = perception_param
         if(self.comm_dict[name].buf == "add"):
