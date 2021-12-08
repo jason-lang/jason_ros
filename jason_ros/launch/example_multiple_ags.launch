@@ -1,0 +1,16 @@
+<launch>
+  <node name="jason_hw_bridge" pkg="jason_ros" type="hw_bridge.py" output="screen">
+     <param name="actions_manifest" value="$(find jason_ros)/config/actions_manifest"/>
+     <param name="perceptions_manifest" value="$(find jason_ros)/config/perceptions_manifest"/>
+     <param name="agent_name" value="sample_agent"/>
+  </node>
+
+  <node name="jason_hw_bridge2" pkg="jason_ros" type="hw_bridge.py" output="screen">
+     <param name="actions_manifest" value="$(find jason_ros)/config/actions_manifest2"/>
+     <param name="perceptions_manifest" value="$(find jason_ros)/config/perceptions_manifest2"/>
+     <param name="agent_name" value="sample_agent2"/>
+  </node>
+
+  <node name="jason_agent" pkg="jason_ros" type="gradle_starter.sh"
+    args="$(find jason_ros)/examples/multiple_ags/build.gradle" output="screen"/>
+</launch>

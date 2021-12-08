@@ -1,7 +1,9 @@
-[teste]
-method = topic
+[DEFAULT]
+rate = 1
+
+[state]
 name = hw/teste1
 msg_type = String
 dependencies = std_msgs.msg
-params_name = data
-latch = True
+args = data
+buf = add

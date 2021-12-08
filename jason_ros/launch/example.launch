@@ -1,10 +1,12 @@
 <launch>
   <group ns="myagent">
-    <node name="jason_hw_bridge" pkg="jason_ros" type="hw_bridge.py"
-      args="-a $(find jason_ros)/config/actions_manifest
-      -p $(find jason_ros)/config/perceptions_manifest" output="screen"/>
+    <node name="jason_hw_bridge" pkg="jason_ros" type="hw_bridge.py" output="screen">
+       <param name="actions_manifest" value="$(find jason_ros)/config/actions_manifest"/>
+       <param name="perceptions_manifest" value="$(find jason_ros)/config/perceptions_manifest"/>
+       <param name="agent_name" value="sample_agent"/>
+    </node>
 
     <node name="jason_agent" pkg="jason_ros" type="gradle_starter.sh"
-      args="$(find jason_ros)/src/rosjava_agents/build.gradle" output="screen"/>
+      args="$(find jason_ros)/src/rosjava_agents/build.gradle"/>
   </group>
 </launch>

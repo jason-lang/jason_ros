@@ -1,0 +1,19 @@
+/*
+    multiple_ags
+    ---------------------------
+
+    Jason Project File
+
+    This file defines the initial state of the MAS
+
+    Jason 3.0
+    December 07, 2021 - 19:44:15
+*/
+
+MAS multiple_ags {
+
+    infrastructure: Local
+
+    agents: sample_agent agentArchClass jasonros.RosArch;
+            sample_agent2 agentArchClass jasonros.RosArch;
+}

@@ -1,6 +1,6 @@
 [teste]
 method = topic
-name = hw/teste1
+name = hw/teste2
 msg_type = String
 dependencies = std_msgs.msg
 params_name = data

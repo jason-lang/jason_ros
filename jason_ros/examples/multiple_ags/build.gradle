@@ -1,0 +1,71 @@
+/*
+   Project multiple_ags
+
+   Gradle build file for Jason Application
+   December 07, 2021 - 19:44:15
+*/
+
+defaultTasks 'run'
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+version '1.0'
+group   'org.jason'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(15)
+    }
+}
+
+repositories {
+    mavenCentral()
+    jcenter()
+    google()
+
+    //maven { url "http://jacamo.sourceforge.net/maven2" }
+    maven { url "https://raw.github.com/jacamo-lang/mvn-repo/master" }
+    maven { url "https://jade.tilab.com/maven/" }
+    maven { url "https://raw.github.com/rosjava/rosjava_mvn_repo/master" }
+    maven { url "https://raw.github.com/jason-lang/mvn-repo/master" }
+
+    flatDir { dirs 'lib' }
+}
+
+dependencies {
+    implementation group: 'org.jason',     name: 'jason' ,   version: '3.0'
+    implementation 'org.ros.rosjava_core:rosjava:[0.3,0.4)'
+    implementation 'org.ros.rosjava_messages:std_msgs:[0.5,0.6)'
+    implementation 'org.ros.rosjava_bootstrap:message_generation:[0.3,0.4)'
+    implementation files('../../src/rosjava_agents/lib/jason_ros_msgs.jar') //(name:'jason_ros_msgs', ext:'jar')
+
+    implementation 'com.google.guava:guava:12.0'
+    implementation 'org.apache.commons:com.springsource.org.apache.commons.logging:1.1.1'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir '../../src/rosjava_agents/src/java'
+        }
+        resources {
+            srcDir '../../src/rosjava_agents/src/java'
+        }
+    }
+}
+
+task run (type: JavaExec, dependsOn: 'classes') {
+    description 'runs the application'
+    main = 'jason.infra.local.RunLocalMAS'
+    args 'multiple_ags.mas2j'
+	// options:
+	//     args = ['multiple_ags.mas2j', '--debug']
+	//     args = ['multiple_ags.mas2j', '--log-conf', 'l.p'] // to use file l.p to configure logging
+    classpath sourceSets.main.runtimeClasspath
+}
+
+clean {
+    delete 'bin'
+    delete 'build'
+}
