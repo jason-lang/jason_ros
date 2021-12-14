@@ -41,6 +41,21 @@ def getattr_recursive(obj, attrs):
                     obj = list(obj)
                 return obj
 
+#split by comma if not inside parenthesis or nested parenthesis
+def split_comma_parenthesis(string):
+    open_parenthesis = 0
+    splitted = []
+    last_comma_index = -1
+    for i in range(len(string)):
+        if string[i] == '(':
+            open_parenthesis += 1
+        elif string[i] == ')':
+            open_parenthesis -= 1
+        elif string[i] == ',' and open_parenthesis == 0:
+            splitted.append(string[last_comma_index+1:i].strip())
+            last_comma_index = i
+    splitted.append(string[last_comma_index+1:].strip())
+    return splitted
 
 class CommInfo:
     def __init__(self):
@@ -86,13 +101,8 @@ class CommInfo:
             self.name = reader.get(name, "name")
         if reader.has_option(name, "args"):
             args_aux = reader.get(name, "args")
-            self.args = [
-                re.split(
-                    r'\.\s*(?![^())]*\))',
-                    y) for y in [
-                    x.strip() for x in re.split(
-                        r',\s*(?![^())]*\))',
-                        args_aux)]]
+            splitted_args = split_comma_parenthesis(args_aux)
+            self.args = [re.split(r'\.\s*(?![^())]*\))', y) for y in splitted_args]
         if reader.has_option(name, "params_name"):
             aux_name = reader.get(name, "params_name")
             if reader.has_option(name, "params_type"):
@@ -283,30 +293,35 @@ class PerceptionController(CommController):
     def get_perception_param(self, from_obj, arg):
         obj = None
         try:
+            #checks if it contains [] in arg[-1] e.g: arg ['status[](values[](key, value))']
             if re.search(r'\[(.*?)\]', arg[-1]):
                 obj = []
                 arg_aux = arg[:]
-                arg_aux[-1] = arg_aux[-1].split('[')[0]
-                obj_list = getattr_recursive(from_obj, arg_aux)
-                sub_args = re.search(r'\((.+)\)', arg[-1]).group(1)
-                if re.search(r'\[(.*?)\]', sub_args):
-                    for obj_aux in obj_list:
-                        obj.append(
-                            self.get_perception_param(obj_aux, [sub_args]))
-                else:
-                    sub_args = sub_args.replace(" ", "").split(',')
-                    for obj_aux in obj_list:
-                        obj_aux_ = []
-                        for sub_arg in sub_args:
-                            sub_obj = getattr_recursive(
-                                        obj_aux, sub_arg.split('.'))
-                            obj_aux_.append(sub_obj)
-                        obj.append(obj_aux_)
+
+                #parent arg that has brackets. e.g: status[](..) -> status
+                parent_arg = arg_aux[-1].split('[')[0]
+                #arguments between ()
+                child_args = re.search(r'\((.+)\)', arg[-1]).group(1)
+                #splitted args
+                splitted_child_args = split_comma_parenthesis(child_args)
+
+                obj_list = getattr_recursive(from_obj, [parent_arg])
+
+                for obj_ in obj_list:
+                    obj_aux_ = []
+                    for child in splitted_child_args:
+                        # check if child is a vector, e.g: values[](key, value)
+                        # if it is don't append
+                        if re.search(r'\[(.*?)\]', child):
+                            obj_aux_= self.get_perception_param(obj_, child.split('.'))
+                        else:
+                            obj_aux_.append(self.get_perception_param(obj_, child.split('.')))
+                    obj.append(obj_aux_)
+            # if it is just a regular arg with no brackets. e.g: name
             else:
                 obj = getattr_recursive(from_obj, arg)
         except AttributeError:
             pass
-
         return obj
 
     def subscriber_callback(self, msg, name):
