@@ -77,7 +77,7 @@ public class RosArch extends AgArch {
         jason_ros_msgs.Perception perception = rosNode.getPerception();
         while (perception != null) {
             String agent_name = perception.getAgentName();
-            if(agent_name.equals(this.getAgName())){
+            if(agent_name.equals(this.getAgName()) || agent_name.isEmpty()){
               TransitionSystem ts = getTS();
               Literal bel = createLiteral(perception.getPerceptionName());
               bel.addAnnot(ts.getAg().getBB().TPercept);
