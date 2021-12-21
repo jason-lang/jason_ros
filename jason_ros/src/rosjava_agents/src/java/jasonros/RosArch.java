@@ -131,7 +131,11 @@ public class RosArch extends AgArch {
     }
 
     private boolean isVector(String str){
-      return (str.charAt(0)=='[' && str.charAt(str.length()-1) == ']');
+      try{
+        return (str.charAt(0)=='[' && str.charAt(str.length()-1) == ']');
+      }catch(StringIndexOutOfBoundsException e){
+        return false;
+      }
     }
 
     private Term parsePerception(String perception){
