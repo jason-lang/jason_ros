@@ -26,6 +26,7 @@ import jason.asSyntax.*;
 import jason.asSyntax.Trigger.TEOperator;
 import jason.asSyntax.Trigger.TEType;
 import jason.asSyntax.parser.ParseException;
+import jason.asSyntax.parser.TokenMgrError;
 import jason_ros_msgs.ActionStatus;
 import jason_ros_msgs.Message;
 import jason_ros_msgs.Perception;
@@ -83,15 +84,7 @@ public class RosArch extends AgArch {
               bel.addAnnot(ts.getAg().getBB().TPercept);
 
               for (String param : perception.getParameters()) {
-                try {
-                  Term p = parseTerm(param);
-                  if (p.isVar()) {
-                    p = new StringTermImpl(param);
-                  }
-                  bel.addTerm(p);
-                } catch (ParseException e) {
-                  bel.addTerm(new StringTermImpl(param));
-                }
+                bel.addTerm(parsePerception(param));
               }
 
               boolean bufUpdate = perception.getUpdate();
@@ -135,6 +128,74 @@ public class RosArch extends AgArch {
             perception = rosNode.getPerception();
         }
         return null;
+    }
+
+    private boolean isVector(String str){
+      return (str.charAt(0)=='[' && str.charAt(str.length()-1) == ']');
+    }
+
+    private Term parsePerception(String perception){
+      if(isVector(perception)){
+        return string2ListTerm(perception);
+      }else{
+        return parseString2TermOrString(perception);
+      }
+    }
+
+    private Term parseString2TermOrString(String str){
+      Term t;
+      try {
+        t = parseTerm(str);
+        if (t.isVar()) {
+          t = new StringTermImpl(str);
+        }
+      } catch (ParseException | TokenMgrError e) {
+        t = new StringTermImpl(str);
+      }
+      return t;
+    }
+
+    private ListTerm string2ListTerm(String vector){
+      // List of terms that will be returned
+      ListTerm term_list = new ListTermImpl();
+
+      // remove first and last brackets
+      int len = vector.length();
+      String inner_elem_raw = vector.substring(1, len-1);
+
+      // get all the vector elements. (split string by commas outside brackets)
+      ArrayList<String> inner_elems = split_str_comma_brackets(inner_elem_raw);
+
+      // for each element of vector check if it is another vector
+      for (int i=0; i<inner_elems.size(); i++) {
+        //if element is vector call function recursively and append to term_list
+        if(isVector(inner_elems.get(i))){
+          term_list.append(string2ListTerm(inner_elems.get(i)));
+        }else{ //else append directly to term_list
+          term_list.append(parseString2TermOrString(inner_elems.get(i)));
+        }
+      }
+      return term_list;
+    }
+
+    private ArrayList<String> split_str_comma_brackets(String str){
+      int open_brackets = 0;
+      int last_comma_index = -1;
+      ArrayList<String> splitted_str = new ArrayList<String>();
+      for (int i = 0; i<str.length(); i++) {
+        if (str.charAt(i) == '['){
+          open_brackets += 1;
+        }else if(str.charAt(i) == ']'){
+          open_brackets -= 1;
+        }else if(str.charAt(i) == ',' && open_brackets == 0){
+          String sub_string = str.substring(last_comma_index+1, i);
+          splitted_str.add(sub_string.trim());
+          last_comma_index = i;
+        }
+      }
+      String sub_string = str.substring(last_comma_index+1);
+      splitted_str.add(sub_string.trim());
+      return splitted_str;
     }
 
     @Override
