@@ -15,7 +15,7 @@ group   'org.jason'
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(15)
+        languageVersion = JavaLanguageVersion.of(17)
     }
 }
 
@@ -24,7 +24,6 @@ repositories {
     jcenter()
     google()
 
-    //maven { url "http://jacamo.sourceforge.net/maven2" }
     maven { url "https://raw.github.com/jacamo-lang/mvn-repo/master" }
     maven { url "https://jade.tilab.com/maven/" }
     maven { url "https://raw.github.com/rosjava/rosjava_mvn_repo/master" }
