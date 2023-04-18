@@ -12,6 +12,70 @@ Docker images containing this repo and needed environment can be found at [docke
 
 armv7 version at branch [armv7](https://github.com/Rezenders/jason-ros/tree/armv7) (out of date)
 
+## Installation
+
+### Install Dependencies
+
+First you need to [install ROS](http://wiki.ros.org/noetic/Installation/Ubuntu), this package was tested the last time with ROS noetic, but it should work with ROS melodic as well.
+
+Then you need to install gradle (tested with gradle 8.1):
+
+```Bash
+$ wget https://services.gradle.org/distributions/gradle-8.1-bin.zip -P /tmp
+$ unzip -d /opt/gradle /tmp/gradle-*.zip
+```
+
+Set environment variables
+```Bash
+echo `export GRADLE_HOME=/opt/gradle/gradle-8.1` >> ~/.bashrc
+echo `export PATH=${GRADLE_HOME}/bin:${PATH}` >> ~/.bashrc
+```
+
+Don't forget to reload your terminal.
+
+Install Java 17:
+```Bash
+$ apt install openjdk-17-jdk
+```
+
+Set java environment variable:
+```Bash
+$  echo `export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64` >> ~/.bashrc
+```
+
+### Build jason_ros
+Create a ROS workspace:
+
+```Bash
+$ mkdir -p ~/jason_ros_ws/src
+$ cd ~/jason_ros_ws/src
+$ catkin_init_workspace
+```
+
+Clone this repo into:
+```Bash
+$ git clone https://github.com/jason-lang/jason_ros.git
+```
+
+Install deps:
+```Bash
+$ cd ~/jason_ros_ws/
+$ rosdep init
+$ rosdep update
+$ rosdep install --from-paths src --ignore-src -r -y
+```
+
+Build workspace:
+```Bash
+$ cd ~/jason_ros_ws/
+$ catkin_make
+```
+
+**PS**: Don't forget to source ROS before running ROS commands
+```Bash
+$ source /opt/ros/noetic/setup.bash
+```
+
 ## Usage
 
 ### mas2j
@@ -40,9 +104,9 @@ repositories {
 }
 
 dependencies {
-   compile group: 'org.jason-lang',     name: 'jason' ,   version: '2.4-SNAPSHOT'
-   compile group: 'org.jason-lang',     name: 'jasonros' ,   version: '1.4'
-   compile group: 'org.jason-lang',     name: 'jasonros_msgs' ,   version: '1.4'
+  implementation group: 'org.jason',     name: 'jason' ,   version: '3.0-SNAPSHOT'
+  implementation group: 'org.jason-lang',     name: 'jasonros' ,   version: '1.9.2'
+  implementation group: 'org.jason-lang',     name: 'jasonros_msgs' ,   version: '1.9.2'
 }
 ```
 
@@ -61,19 +125,13 @@ params_name = data
 params_type = str
 latch = True
 ```
-method - topic or service
-
-name - name of the topic or service
-
-msg_type - type of the message e.g. String, Bool, Int32
-
-dependencies - python module which contains the message type e.g. std_msgs.msg, mavros_msgs.msg
-
-params_name - name of the parameter being sent
-
-params_type - type of the parameter e.g. bool, str, int. If not inclued the default type is str
-
-latch - if the action should be latched e.g. true, True, yes, 1, False, false. If not included the default is true
+* method - topic or service
+* name - name of the topic or service
+* msg_type - type of the message e.g. String, Bool, Int32
+* dependencies - python module which contains the message type e.g. std_msgs.msg, mavros_msgs.msg
+* params_name - name of the parameter being sent
+* params_type - type of the parameter e.g. bool, str, int. If not inclued the default type is str
+* latch - if the action should be latched e.g. true, True, yes, 1, False, false. If not included the default is true
 
 For more examples of actions you can take a look at this [action_manifest](https://github.com/Rezenders/MAS-UAV/blob/master/MiddleNode/actions_manifest)
 
@@ -86,35 +144,17 @@ dependencies = std_msgs.msg
 args = data
 buf = add
 ```
-name - name of the topic or service
-
-msg_type - type of the message e.g. String, Bool, Int32
-
-dependencies - python module which contains the message type e.g. std_msgs.msg, mavros_msgs.msg
-
-args - fields that you want to perceive
-
-buf (belief update function) - if the perception should be added or updated in the belief base. If not inclued the default option is update
-
-This perception would be added into the agent belief base as state(data)
+* name - name of the topic or service
+* msg_type - type of the message e.g. String, Bool, Int32
+* dependencies - python module which contains the message type e.g. std_msgs.msg, mavros_msgs.msg
+* args - fields that you want to perceive
+* buf (belief update function) - if the perception should be added or updated in the belief base. If not included the default option is update. The perception in the example would be added into the agent belief base as state(data)
 
 For more examples of perceptions you can take a look at this [perceptions_manifest](https://github.com/Rezenders/MAS-UAV/blob/master/MiddleNode/perceptions_manifest)
 
 ### Running Bare Metal
 
-#### Dependencies
-ros - this project was tested with ros melodic but it should work with different versions
-
-java
-
-gradle
-
 #### Running
-Clone this repo:
-```
-$ git clone https://github.com/Rezenders/jason-ros.git
-```
-
 Initialize roscore:
 ```
 $ roscore
