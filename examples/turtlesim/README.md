@@ -16,7 +16,7 @@ $ rosrun turtlesim turtlesim_node
 
 Start HwBridge, must be in this folder:
 ```
-$ rosrun hw_bridge hw_bridge.py
+$ rosrun jason_ros hw_bridge.py
 ```
 
 Note: Remember to run ```catkin_make``` and to source hw_bridge

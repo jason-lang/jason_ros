@@ -13,6 +13,12 @@ apply plugin: 'eclipse'
 version '1.0'
 group   'org.jason'
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
 repositories {
     mavenCentral()
     jcenter()
